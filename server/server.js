@@ -6,7 +6,7 @@ import databaseConnection from "./config/db.js";
 import router from "./routes/user.route.js";
 
 // Load environment variables from.env file
-databaseConnection();
+await databaseConnection();
 dotenv.config({ path: ".env" });
 const port = process.env.PORT || 4000;
 
