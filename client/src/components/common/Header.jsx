@@ -22,19 +22,6 @@ const Header = () => {
       </div>
 
       <nav>
-        {/* {isSignedIn ? (
-          <UserButton
-            user={user}
-            className="text-white font-medium px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg"
-          />
-        ) : (
-          <button
-            onClick={() => openSignIn()}
-            className="text-white bg-blue-700 font-semibold px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg"
-          >
-            Sign In
-          </button>
-        )} */}
         {isSignedIn ? (
           <UserButton className="text-white bg-blue-700 font-semibold px-4 py-2 rounded-md transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg" />
         ) : (

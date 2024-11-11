@@ -1,4 +1,5 @@
-import React from "react";
+import { useUser } from "@clerk/clerk-react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 // Helper function to split text into animated letters
@@ -19,6 +20,23 @@ const AnimatedText = ({ text }) => {
 };
 
 const AuthLayout = () => {
+  const { isLoaded } = useUser();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Redirect to home if the user is already signed in
+    if (isLoaded) {
+      setLoading(false);
+    }
+  }, [isLoaded]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
   return (
     <div className="flex min-h-screen w-full">
       {/* Common part (Welcome section) */}

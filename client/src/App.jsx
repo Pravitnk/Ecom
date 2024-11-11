@@ -83,11 +83,17 @@
 
 // export default App;
 
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import Header from "./components/common/Header";
 import Checkauth from "./components/common/Check-auth";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserRole } from "./store/auth-slice/auth";
+import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Skeleton } from "./components/ui/skeleton";
 
 // Lazy load your components
 const AuthLayout = lazy(() => import("./components/auth/AuthLayout"));
@@ -109,19 +115,70 @@ const Listing = lazy(() => import("./pages/shopping/Listing"));
 const Unauth = lazy(() => import("./pages/Unauth"));
 
 function App() {
-  const { isSignedIn, user } = useUser();
-  console.log(user);
+  // const { loading } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { isSignedIn, isLoaded, user } = useUser();
+  const [loading, setLoading] = useState(true); // Global loading state
+  const [role, setRole] = useState(null); // Store the fetched role here
+  const { getToken } = useAuth();
+
+  // console.log(user);
+
+  const fetchUserRole = async () => {
+    if (isSignedIn && user) {
+      try {
+        const token = await getToken();
+        const { data } = await axios.get(
+          "http://localhost:4000/api/auth/role",
+          {
+            headers: { token },
+          }
+        );
+        setRole(data.role); // Set role based on response
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      } finally {
+        setLoading(false); // Set loading to false once role is fetched
+      }
+    } else {
+      setLoading(false); // No need to fetch if not signed in
+    }
+  };
+
+  useEffect(() => {
+    if (isLoaded) {
+      fetchUserRole();
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   const isAuthenticated = isSignedIn;
-  const usr = user;
+  const usr = {
+    user: user,
+    role: role,
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Skeleton className="w-[800px] h-[800px] bg-gray-300" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       {/* Common component */}
+      <ToastContainer position="bottom-right" />
       <Header />
 
       {/* Suspense to handle lazy loading */}
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div>
+            <Skeleton className="w-[800px] h-[800px] bg-black" />
+          </div>
+        }
+      >
         <Routes>
           <Route
             path="/auth"

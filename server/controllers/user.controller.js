@@ -26,7 +26,7 @@ const clerkWebhooks = async (req, res) => {
           firstName: data.first_name,
           lastName: data.last_name,
           photo: data.image_url,
-          role: "user", // Default role or other logic
+          // role: "user", // Default role or other logic
         };
 
         await userModel.create(userData);
@@ -42,7 +42,7 @@ const clerkWebhooks = async (req, res) => {
           firstName: data.first_name,
           lastName: data.last_name,
           photo: data.image_url,
-          role: "user", // Default role or other logic
+          // role: "user", // Default role or other logic
         };
 
         await userModel.findOneAndUpdate({ clerkId: data.id }, userData);
@@ -75,4 +75,24 @@ const clerkWebhooks = async (req, res) => {
   }
 };
 
-export { clerkWebhooks };
+const userRole = async (req, res) => {
+  try {
+    const { clerkId } = req.body;
+
+    // Find the user by clerkId and select only the "role" field
+    const userData = await userModel.findOne({ clerkId }).select("role");
+
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, role: userData.role });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export { clerkWebhooks, userRole };
