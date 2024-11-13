@@ -1,5 +1,6 @@
 import { imageUpload } from "../../helper/cloudinary.js";
 import ProductModel from "../../models/products.model.js";
+import mongoose from "mongoose";
 
 //image upload
 const handleImageUpload = async (req, res) => {
@@ -83,6 +84,13 @@ const getAllProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID format",
+      });
+    }
+
     const {
       image,
       title,
@@ -94,7 +102,7 @@ const updateProduct = async (req, res) => {
       totalStock,
     } = req.body;
 
-    const findProduct = await ProductModel.findById(id);
+    let findProduct = await ProductModel.findById(id);
 
     if (!findProduct) {
       return res.status(404).json({
@@ -108,9 +116,10 @@ const updateProduct = async (req, res) => {
     findProduct.description = description || findProduct.description;
     findProduct.category = category || findProduct.category;
     findProduct.brand = brand || findProduct.brand;
-    findProduct.price = price || findProduct.price;
-    findProduct.salePrice = salePrice || findProduct.salePrice;
-    findProduct.salePrice = totalStock || findProduct.totalStock;
+    findProduct.price = price === "" ? 0 : price || findProduct.price;
+    findProduct.salePrice =
+      salePrice === "" ? 0 : salePrice || findProduct.salePrice;
+    findProduct.totalStock = totalStock || findProduct.totalStock;
 
     await findProduct.save();
 
@@ -132,6 +141,15 @@ const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await ProductModel.findByIdAndDelete(id);
+
+    // Validate `id` format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID format",
+      });
+    }
+
     if (!product) {
       return res.status(404).json({
         success: false,

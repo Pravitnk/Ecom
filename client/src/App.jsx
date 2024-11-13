@@ -169,7 +169,7 @@ function App() {
     <div className="flex flex-col overflow-hidden bg-white">
       {/* Common component */}
       <ToastContainer position="bottom-right" />
-      <Header />
+      {/* <Header /> */}
 
       {/* Suspense to handle lazy loading */}
       <Suspense
