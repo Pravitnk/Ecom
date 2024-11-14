@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 /* ... */
+/* Importing Roboto font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+/* Applying Roboto as the default font to the body of the page */
+body {
+  font-family: "Roboto", sans-serif;
+}
 
 @layer base {
   :root {

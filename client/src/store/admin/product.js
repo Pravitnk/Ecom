@@ -68,15 +68,12 @@ const adminProductSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getAllProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.isLoading = false;
         state.productList = action.payload.data;
       })
       .addCase(getAllProduct.rejected, (state) => {
         state.isLoading = false;
         state.productList = [];
-        console.log("Error fetching products");
       });
   },
 });

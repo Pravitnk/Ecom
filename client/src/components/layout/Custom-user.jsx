@@ -1,5 +1,5 @@
-import { UserButton } from "@clerk/clerk-react";
-import { Accessibility } from "lucide-react";
+import { SignOutButton, useClerk, UserButton } from "@clerk/clerk-react";
+import { UserCog } from "lucide-react";
 import React from "react";
 
 const CustomUser = () => {
@@ -14,10 +14,11 @@ const CustomUser = () => {
       <UserButton.MenuItems>
         <UserButton.Link
           label="Account"
-          labelIcon={<Accessibility size={30} />}
+          labelIcon={<UserCog className="mr-2 h-4 w-4" size={30} />}
           href="/shop/account"
         />
         <UserButton.Action label="manageAccount" />
+        <UserButton.Action label="signOut" />
       </UserButton.MenuItems>
     </UserButton>
   );
