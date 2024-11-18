@@ -10,10 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { sortOptions } from "@/config";
+import { addToCart } from "@/store/shop-slice/cartSlice";
 import {
   getAllFilteredProduct,
   getProductDetails,
 } from "@/store/shop-slice/products";
+import { useUser } from "@clerk/clerk-react";
+import { data } from "autoprefixer";
 import { ArrowUpDownIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,6 +42,7 @@ const Listing = () => {
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [open, setOpen] = useState(false);
+  const { user } = useUser();
 
   const handleSort = (value) => {
     setSort(value);
@@ -69,6 +73,21 @@ const Listing = () => {
     console.log(getCurrentProductId);
     dispatch(getProductDetails(getCurrentProductId));
     // setOpen(true);
+  };
+
+  const handleAddToCart = (getCurrentProductId) => {
+    console.log(getCurrentProductId);
+    console.log(user?.id);
+    const clerkId = user?.id; // Clerk user ID
+    dispatch(
+      addToCart({
+        clerkId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      console.log(data);
+    });
   };
 
   //storing in session storage to get data on refresh
@@ -143,6 +162,7 @@ const Listing = () => {
                   key={i}
                   product={productItem}
                   handleGetProductDetails={handleGetProductDetails}
+                  handleAddToCart={handleAddToCart}
                 />
               ))
             : null}

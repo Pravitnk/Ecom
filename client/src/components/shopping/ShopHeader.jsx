@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import UserCartWrapper from "./Cart-wrapper";
 
 // const MenuItems = () => {
 //   return (
@@ -82,14 +83,23 @@ const MenuItems = () => {
 };
 
 const HeaderRightContent = () => {
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
+  const [openCartSheet, setOpenCartSheet] = useState(false);
 
   return (
     <div className="flex lg:flex-row flex-col gap-4">
-      <Button varient="outline" size="icon">
-        <ShoppingCart className="w-6 h-6" />
-        <span className="sr-only">User cart</span>
-      </Button>
+      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+        <Button
+          onClick={() => setOpenCartSheet(true)}
+          varient="outline"
+          size="icon"
+        >
+          <ShoppingCart className="w-6 h-6" />
+          <span className="sr-only">User cart</span>
+        </Button>
+        <UserCartWrapper />
+      </Sheet>
+
       {isSignedIn ? (
         <CustomUser
           size={30}

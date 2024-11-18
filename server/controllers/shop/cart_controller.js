@@ -1,17 +1,26 @@
 import Cart from "../../models/cart.model.js";
 import ProductModel from "../../models/products.model.js";
+import userModel from "../../models/user.model.js";
+
+const findUserIdByClerkId = async (clerkId) => {
+  const user = await userModel.findOne({ clerkId });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user._id; // Return MongoDB ObjectId
+};
 
 const addToCart = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
+    const { clerkId, productId, quantity } = req.body;
+    console.log("clerkId, productId, quantity", clerkId, productId, quantity);
 
-    if (!userId || !productId || !quantity <= 0) {
+    if (!clerkId || !productId || quantity <= 0) {
       return res.status(400).json({
         success: false,
         message: "Invalid data provided",
       });
     }
-
     const product = await ProductModel.findById(productId);
 
     if (!product) {
@@ -20,6 +29,8 @@ const addToCart = async (req, res) => {
         message: "Product not found",
       });
     }
+
+    const userId = await findUserIdByClerkId(clerkId);
 
     let cart = await Cart.findOne({ userId });
 
@@ -32,7 +43,11 @@ const addToCart = async (req, res) => {
     );
 
     if (findCurrentProductIndex === -1) {
-      cart.items.push({ productId, quantity });
+      cart.items.push({
+        productId,
+        quantity,
+        price: product.price, // Include price here
+      });
     } else {
       cart.items[findCurrentProductIndex].quantity += quantity;
     }

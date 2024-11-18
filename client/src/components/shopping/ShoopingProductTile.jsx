@@ -4,7 +4,11 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
 
-const ShoopingProductTile = ({ product, handleGetProductDetails }) => {
+const ShoopingProductTile = ({
+  product,
+  handleGetProductDetails,
+  handleAddToCart,
+}) => {
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div onClick={() => handleGetProductDetails(product._id)}>
@@ -46,20 +50,21 @@ const ShoopingProductTile = ({ product, handleGetProductDetails }) => {
             ) : null}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between items-center">
-          <Button
-            className="w-full hover:scale-105 transition-all duration-500"
-            // onClick={() => {
-            //   setOpenCreateProductDialog(true);
-            //   setCurrentEditedId(product?._id);
-            //   setFormData(product);
-            // }}
-          >
-            Add to Cart
-          </Button>
-          {/* <Button onClick={() => handleDelete(product?._id)}>Buy Now</Button> */}
-        </CardFooter>
       </div>
+      <CardFooter className="flex justify-between items-center">
+        <Button
+          className="w-full hover:scale-105 transition-all duration-500"
+          onClick={() => {
+            handleAddToCart(product._id);
+            // setOpenCreateProductDialog(true);
+            // setCurrentEditedId(product?._id);
+            // setFormData(product);
+          }}
+        >
+          Add to Cart
+        </Button>
+        {/* <Button onClick={() => handleDelete(product?._id)}>Buy Now</Button> */}
+      </CardFooter>
     </Card>
   );
 };

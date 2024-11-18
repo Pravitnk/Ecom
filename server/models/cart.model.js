@@ -4,7 +4,7 @@ const cartSchema = mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "user", // Referencing the user model by clerkId
       required: true,
     },
     items: [
