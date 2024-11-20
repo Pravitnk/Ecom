@@ -9,8 +9,8 @@ import {
 const cartRout = express.Router();
 
 cartRout.post("/add", addToCart);
-cartRout.get("/get/:userId", getCartItems);
+cartRout.get("/get/:clerkId", getCartItems);
 cartRout.put("/update-cart", updateCartItemQuantity);
-cartRout.delete("/:userId/:productId", deleteToCart);
+cartRout.delete("/:clerkId/:productId", deleteToCart);
 
 export default cartRout;

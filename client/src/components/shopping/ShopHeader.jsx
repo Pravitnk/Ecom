@@ -1,5 +1,5 @@
 import { UserButton, useUser } from "@clerk/clerk-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import UserCartWrapper from "./Cart-wrapper";
+import { useDispatch, useSelector } from "react-redux";
+import { getCartItems } from "@/store/shop-slice/cartSlice";
 
 // const MenuItems = () => {
 //   return (
@@ -83,8 +85,15 @@ const MenuItems = () => {
 };
 
 const HeaderRightContent = () => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
+  const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
+  const dispatch = useDispatch();
+  const clerkId = user?.id;
+
+  useEffect(() => {
+    dispatch(getCartItems(clerkId));
+  }, [dispatch]);
 
   return (
     <div className="flex lg:flex-row flex-col gap-4">
@@ -97,7 +106,11 @@ const HeaderRightContent = () => {
           <ShoppingCart className="w-6 h-6" />
           <span className="sr-only">User cart</span>
         </Button>
-        <UserCartWrapper />
+        <UserCartWrapper
+          cartItems={
+            cartItems.items && cartItems.items.length > 0 ? cartItems.items : []
+          }
+        />
       </Sheet>
 
       {isSignedIn ? (

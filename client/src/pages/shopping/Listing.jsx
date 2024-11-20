@@ -10,17 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { sortOptions } from "@/config";
-import { addToCart } from "@/store/shop-slice/cartSlice";
+import { addToCart, getCartItems } from "@/store/shop-slice/cartSlice";
 import {
   getAllFilteredProduct,
   getProductDetails,
 } from "@/store/shop-slice/products";
 import { useUser } from "@clerk/clerk-react";
-import { data } from "autoprefixer";
 import { ArrowUpDownIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const createSearchParamsHelper = (filterParams) => {
   const queryParams = [];
@@ -43,6 +43,8 @@ const Listing = () => {
   const [sort, setSort] = useState(null);
   const [open, setOpen] = useState(false);
   const { user } = useUser();
+  const clerkId = user.id;
+  // console.log(clerkId);
 
   const handleSort = (value) => {
     setSort(value);
@@ -78,7 +80,6 @@ const Listing = () => {
   const handleAddToCart = (getCurrentProductId) => {
     console.log(getCurrentProductId);
     console.log(user?.id);
-    const clerkId = user?.id; // Clerk user ID
     dispatch(
       addToCart({
         clerkId: user?.id,
@@ -87,6 +88,10 @@ const Listing = () => {
       })
     ).then((data) => {
       console.log(data);
+      if (data?.payload?.success) {
+        dispatch(getCartItems(clerkId));
+        toast.success("Product successfully added to cart...");
+      }
     });
   };
 

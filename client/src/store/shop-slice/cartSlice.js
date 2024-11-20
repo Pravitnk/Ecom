@@ -6,25 +6,6 @@ const initialState = {
   cartItems: [],
 };
 
-// export const addToCart = createAsyncThunk(
-//   "cart/addToCart",
-//   async ({ userId, productId, quantity }) => {
-//     // try {
-//     const response = await axios.post(
-//       `http://localhost:4000/api/shop/cart/add`,
-//       {
-//         userId,
-//         productId,
-//         quantity,
-//       }
-//     );
-//     return response?.data;
-//     // } catch (error) {
-//     //   console.error(error);
-//     // }
-//   }
-// );
-
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ clerkId, productId, quantity }, { rejectWithValue }) => {
@@ -48,9 +29,11 @@ export const addToCart = createAsyncThunk(
 
 export const getCartItems = createAsyncThunk(
   "cart/getCartItems",
-  async (userId) => {
+  async (clerkId) => {
+    console.log("clerkId is :", clerkId);
+
     const result = await axios.get(
-      `http://localhost:4000/api/shop/cart/add/${userId}`
+      `http://localhost:4000/api/shop/cart/get/${clerkId}`
     );
     return result?.data;
   }
@@ -58,10 +41,10 @@ export const getCartItems = createAsyncThunk(
 
 export const updateCartItemQuantity = createAsyncThunk(
   "cart/updateCartItemQuantity",
-  async ({ userId, productId, quantity }) => {
+  async ({ clerkId, productId, quantity }) => {
     const result = await axios.put(
       `http://localhost:4000/api/shop/cart/update-cart`,
-      { userId, productId, quantity }
+      { clerkId, productId, quantity }
     );
     return result?.data;
   }
@@ -69,9 +52,9 @@ export const updateCartItemQuantity = createAsyncThunk(
 
 export const deleteToCart = createAsyncThunk(
   "cart/deleteToCart",
-  async ({ userId, productId }) => {
+  async ({ clerkId, productId }) => {
     const result = await axios.delete(
-      `http://localhost:4000/api/shop/cart/${userId}/${productId}`
+      `http://localhost:4000/api/shop/cart/${clerkId}/${productId}`
     );
     return result?.data;
   }

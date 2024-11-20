@@ -46,7 +46,7 @@ const addToCart = async (req, res) => {
       cart.items.push({
         productId,
         quantity,
-        price: product.price, // Include price here
+        price: product.price, // Add price field
       });
     } else {
       cart.items[findCurrentProductIndex].quantity += quantity;
@@ -69,14 +69,18 @@ const addToCart = async (req, res) => {
 
 const getCartItems = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { clerkId } = req.params; // Replace userId with clerkId
 
-    if (!userId) {
+    if (!clerkId) {
       return res.status(404).json({
         success: false,
-        message: "userId not found",
+        message: "clerkId not found",
       });
     }
+
+    // Find the userId associated with the clerkId
+    const userId = await findUserIdByClerkId(clerkId);
+    console.log("Mapped UserId:", userId);
 
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
@@ -90,7 +94,7 @@ const getCartItems = async (req, res) => {
       });
     }
 
-    //valid cart item
+    // Filter valid cart items
     const validItems = cart.items.filter(
       (productItem) => productItem.productId
     );
@@ -127,21 +131,24 @@ const getCartItems = async (req, res) => {
 
 const updateCartItemQuantity = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
+    const { clerkId, productId, quantity } = req.body;
 
-    if (!userId || !productId || !quantity) {
+    if (!clerkId || !productId || quantity === undefined || quantity === null) {
       return res.status(400).json({
         success: false,
         message: "Invalid data provided",
       });
     }
 
+    // Fetch userId using clerkId
+    const userId = await findUserIdByClerkId(clerkId);
+
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "cart not found",
+        message: "Cart not found",
       });
     }
 
@@ -152,7 +159,7 @@ const updateCartItemQuantity = async (req, res) => {
     if (findCurrentProductIndex === -1) {
       return res.status(404).json({
         success: false,
-        message: "cart iten not present",
+        message: "Cart item not present",
       });
     } else {
       // Update item quantity
@@ -194,21 +201,26 @@ const updateCartItemQuantity = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Server Error Occured",
+      message: "Server Error Occurred",
     });
   }
 };
 
 const deleteToCart = async (req, res) => {
   try {
-    const { userId, productId } = req.params;
+    const { clerkId, productId } = req.params;
+    console.log("clerkId", clerkId);
+    console.log("productId", productId);
 
-    if (!userId || !productId) {
+    if (!clerkId || !productId) {
       return res.status(400).json({
         success: false,
         message: "Invalid data provided",
       });
     }
+
+    // Fetch the userId using clerkId
+    const userId = await findUserIdByClerkId(clerkId);
 
     let cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
@@ -218,17 +230,19 @@ const deleteToCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "cart not found",
+        message: "Cart not found",
       });
     }
 
+    // Filter out the product to delete
     cart.items = cart.items.filter(
-      (item) => item.productId._id.toString() !== productId
+      (item) => item.productId && item.productId._id.toString() !== productId
     );
 
     await cart.save();
 
-    await Cart.populate({
+    // Populate cart items again (this isn't necessary if already populated above)
+    await Cart.populate(cart, {
       path: "items.productId",
       select: "image title price salePrice",
     });
@@ -253,7 +267,7 @@ const deleteToCart = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Server Error Occured",
+      message: "Server Error Occurred",
     });
   }
 };

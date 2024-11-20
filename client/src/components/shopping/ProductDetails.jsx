@@ -37,11 +37,11 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
                   : "text-primary"
               }`}
             >
-              INR {productDetails?.price}
+              Rs.{productDetails?.price.toFixed(2)}
             </p>
             {productDetails?.salePrice > 0 ? (
               <p className="text-2xl font-semibold text-primary">
-                INR {productDetails?.salePrice}
+                Rs.{productDetails?.salePrice.toFixed(2)}
               </p>
             ) : null}
           </div>

@@ -27,12 +27,10 @@ const ProductTile = ({
                 product?.salePrice > 0 ? "line-through" : ""
               } text-lg font-semibold text-primary`}
             >
-              INR {product?.price}
+              Rs.{product?.price}
             </span>
             {product?.salePrice > 0 ? (
-              <span className="text-lg font-bold">
-                INR ${product?.salePrice}
-              </span>
+              <span className="text-lg font-bold">Rs.{product?.salePrice}</span>
             ) : null}
           </div>
         </CardContent>

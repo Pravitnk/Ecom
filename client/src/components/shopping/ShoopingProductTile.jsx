@@ -41,11 +41,11 @@ const ShoopingProductTile = ({
                 product?.salePrice > 0 ? "line-through" : ""
               } text-lg font-semibold text-primary`}
             >
-              INR {product?.price}
+              Rs.{product?.price.toFixed(2)}
             </span>
             {product?.salePrice > 0 ? (
               <span className="text-lg font-semibold text-primary">
-                INR {product?.salePrice}
+                Rs.{product?.salePrice.toFixed(2)}
               </span>
             ) : null}
           </div>
