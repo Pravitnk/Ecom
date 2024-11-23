@@ -48,7 +48,6 @@ const Products = () => {
     currentEditedId !== null
       ? dispatch(updateProduct({ id: currentEditedId, formData })).then(
           (data) => {
-            console.log("data", data);
             if (data?.payload?.success) {
               dispatch(getAllProduct());
               setFormData(initialFormData);
@@ -62,7 +61,6 @@ const Products = () => {
         )
       : dispatch(addNewProduct({ ...formData, image: uploadedImageUrl })).then(
           (data) => {
-            console.log(data);
             if (data?.payload?.success) {
               setImageFile(null);
               dispatch(getAllProduct());
@@ -81,7 +79,6 @@ const Products = () => {
   };
 
   const handleDelete = (getCurrentProductId) => {
-    console.log(getCurrentProductId);
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
       if (data?.payload?.success) {
         dispatch(getAllProduct());
@@ -92,7 +89,6 @@ const Products = () => {
   useEffect(() => {
     dispatch(getAllProduct());
   }, [dispatch]);
-  console.log("list", productList);
 
   return (
     <Fragment>

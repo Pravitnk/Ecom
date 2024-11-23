@@ -13,7 +13,6 @@ const findUserIdByClerkId = async (clerkId) => {
 const addToCart = async (req, res) => {
   try {
     const { clerkId, productId, quantity } = req.body;
-    console.log("clerkId, productId, quantity", clerkId, productId, quantity);
 
     if (!clerkId || !productId || quantity <= 0) {
       return res.status(400).json({
@@ -80,7 +79,6 @@ const getCartItems = async (req, res) => {
 
     // Find the userId associated with the clerkId
     const userId = await findUserIdByClerkId(clerkId);
-    console.log("Mapped UserId:", userId);
 
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
@@ -163,7 +161,7 @@ const updateCartItemQuantity = async (req, res) => {
       });
     } else {
       // Update item quantity
-      cart.items[findCurrentProductIndex].quantity += quantity;
+      cart.items[findCurrentProductIndex].quantity = quantity;
 
       // Ensure quantity does not fall below 1
       if (cart.items[findCurrentProductIndex].quantity < 1) {
@@ -209,8 +207,6 @@ const updateCartItemQuantity = async (req, res) => {
 const deleteToCart = async (req, res) => {
   try {
     const { clerkId, productId } = req.params;
-    console.log("clerkId", clerkId);
-    console.log("productId", productId);
 
     if (!clerkId || !productId) {
       return res.status(400).json({

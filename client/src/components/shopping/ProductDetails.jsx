@@ -5,10 +5,18 @@ import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { StarIcon } from "lucide-react";
 import { Input } from "../ui/input";
+import { setProductDetails } from "@/store/shop-slice/products";
+import { useDispatch } from "react-redux";
 
-const ProductDetails = ({ open, setOpen, productDetails }) => {
+const ProductDetails = ({ open, setOpen, productDetails, handleAddToCart }) => {
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    setOpen(false);
+    dispatch(setProductDetails());
+  };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[85vw] sm:max-w-[80vw] lg:max-w-[70vw]">
         <div className="relative overflow-hidden rounded-lg">
           <img
@@ -56,7 +64,10 @@ const ProductDetails = ({ open, setOpen, productDetails }) => {
             <span className="text-muted-foreground">(4.5)</span>
           </div>
           <div className="mt-5 mb-5 flex justify-between gap-4 ">
-            <Button className="w-1/2 hover:scale-105 transition-all duration-500">
+            <Button
+              onClick={() => handleAddToCart(productDetails?._id)}
+              className="w-1/2 hover:scale-105 transition-all duration-500"
+            >
               Add to Cart
             </Button>
             <Button className="w-1/2 hover:scale-105 transition-all duration-500">

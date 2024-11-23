@@ -5,8 +5,6 @@ dotenv.config();
 
 //api controller to manage clerk user
 const clerkWebhooks = async (req, res) => {
-  console.log("11");
-
   try {
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
     await whook.verify(JSON.stringify(req.body), {
@@ -15,8 +13,6 @@ const clerkWebhooks = async (req, res) => {
       "svix-signature": req.headers["svix-signature"],
     });
     const { data, type } = req.body;
-    console.log("Webhook Body:", data);
-    console.log("Webhook type:", type);
 
     switch (type) {
       case "user.created": {
@@ -31,7 +27,6 @@ const clerkWebhooks = async (req, res) => {
 
         await userModel.create(userData);
         res.json({});
-        console.log("1");
 
         break;
       }
@@ -47,7 +42,6 @@ const clerkWebhooks = async (req, res) => {
 
         await userModel.findOneAndUpdate({ clerkId: data.id }, userData);
         res.json({});
-        console.log("2");
 
         break;
       }
@@ -55,17 +49,13 @@ const clerkWebhooks = async (req, res) => {
       case "user.deleted": {
         await userModel.findOneAndDelete({ clerkId: data.id });
         res.json({});
-        console.log("3");
 
         break;
       }
 
       default:
-        console.log("4");
-
         break;
     }
-    console.log("21");
   } catch (error) {
     console.error(error.message);
     res.json({

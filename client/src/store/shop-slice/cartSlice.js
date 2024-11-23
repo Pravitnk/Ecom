@@ -14,7 +14,6 @@ export const addToCart = createAsyncThunk(
         `http://localhost:4000/api/shop/cart/add`,
         { clerkId, productId, quantity }
       );
-      console.log(clerkId, productId, quantity);
 
       return response?.data;
     } catch (error) {
@@ -30,8 +29,6 @@ export const addToCart = createAsyncThunk(
 export const getCartItems = createAsyncThunk(
   "cart/getCartItems",
   async (clerkId) => {
-    console.log("clerkId is :", clerkId);
-
     const result = await axios.get(
       `http://localhost:4000/api/shop/cart/get/${clerkId}`
     );
@@ -46,6 +43,7 @@ export const updateCartItemQuantity = createAsyncThunk(
       `http://localhost:4000/api/shop/cart/update-cart`,
       { clerkId, productId, quantity }
     );
+
     return result?.data;
   }
 );

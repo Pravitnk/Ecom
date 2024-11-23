@@ -20,7 +20,6 @@ export const fetchUserRole = createAsyncThunk(
       const response = await axios.get(`http://localhost:4000/api/auth/role`, {
         headers: { token },
       });
-      console.log("res", response);
 
       return response.data;
     } catch (error) {

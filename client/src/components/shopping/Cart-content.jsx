@@ -32,7 +32,6 @@ const UserCartContent = ({ cartItems }) => {
         quantity: newQuantity,
       })
     ).then((data) => {
-      console.log("cart content", data);
       if (data?.payload?.success) {
         toast.success("Cart item is updated successfully");
       } else {
@@ -48,9 +47,10 @@ const UserCartContent = ({ cartItems }) => {
         productId: getCartItems?.productId,
       })
     ).then((data) => {
-      console.log("cart content", data);
-      if (data?.paylaod?.success) {
+      if (data?.payload?.success) {
         toast.success("Cart item is deleted successfully");
+      } else {
+        toast.error("Failed to delete cart item.");
       }
     });
   };

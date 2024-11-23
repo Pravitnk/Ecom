@@ -18,7 +18,6 @@ const ProductImageUpload = ({
   const inputRef = useRef(null);
 
   const handleImageFileChange = (e) => {
-    console.log(e.target.files);
     const seletedFile = e.target.files?.[0];
     if (seletedFile) setImageFile(seletedFile);
   };
@@ -50,7 +49,6 @@ const ProductImageUpload = ({
         data
       );
       if (response) {
-        console.log("res", response);
         setUploadedImageUrl(response.data.result.url);
         setImageLoadingState(false);
       }

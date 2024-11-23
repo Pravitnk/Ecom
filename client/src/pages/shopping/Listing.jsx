@@ -19,7 +19,7 @@ import { useUser } from "@clerk/clerk-react";
 import { ArrowUpDownIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const createSearchParamsHelper = (filterParams) => {
@@ -44,7 +44,6 @@ const Listing = () => {
   const [open, setOpen] = useState(false);
   const { user } = useUser();
   const clerkId = user.id;
-  // console.log(clerkId);
 
   const handleSort = (value) => {
     setSort(value);
@@ -72,14 +71,11 @@ const Listing = () => {
   };
 
   const handleGetProductDetails = (getCurrentProductId) => {
-    console.log(getCurrentProductId);
     dispatch(getProductDetails(getCurrentProductId));
     // setOpen(true);
   };
 
   const handleAddToCart = (getCurrentProductId) => {
-    console.log(getCurrentProductId);
-    console.log(user?.id);
     dispatch(
       addToCart({
         clerkId: user?.id,
@@ -87,10 +83,10 @@ const Listing = () => {
         quantity: 1,
       })
     ).then((data) => {
-      console.log(data);
       if (data?.payload?.success) {
         dispatch(getCartItems(clerkId));
         toast.success("Product successfully added to cart...");
+        setOpen(false);
       }
     });
   };
@@ -121,7 +117,6 @@ const Listing = () => {
     if (productDetails !== null) setOpen(true);
   }, [productDetails]);
 
-  // console.log("filters", filters);
   console.log("productDetails", productDetails);
 
   return (
@@ -177,6 +172,7 @@ const Listing = () => {
         open={open}
         setOpen={setOpen}
         productDetails={productDetails}
+        handleAddToCart={handleAddToCart}
       />
     </div>
   );
