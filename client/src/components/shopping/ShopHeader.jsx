@@ -1,8 +1,8 @@
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { shoppingViewHeaderMenuItems } from "@/config";
 import CustomUser from "../layout/Custom-user";
@@ -18,6 +18,7 @@ import {
 import UserCartWrapper from "./Cart-wrapper";
 import { useDispatch, useSelector } from "react-redux";
 import { getCartItems } from "@/store/shop-slice/cartSlice";
+import { Label } from "../ui/label";
 
 // const MenuItems = () => {
 //   return (
@@ -34,6 +35,8 @@ import { getCartItems } from "@/store/shop-slice/cartSlice";
 const MenuItems = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   // Separate the items for "Categories" and others
   const mainMenuItems = shoppingViewHeaderMenuItems.filter(
     (item) => item.id === "home" || item.id === "search"
@@ -42,13 +45,38 @@ const MenuItems = () => {
     (item) => !["home", "search"].includes(item.id)
   );
 
+  function handleNavigate(getCurrentMenuItem) {
+    sessionStorage.removeItem("filters");
+    const currentFilter =
+      getCurrentMenuItem.id !== "home" &&
+      getCurrentMenuItem.id !== "products" &&
+      getCurrentMenuItem.id !== "search"
+        ? {
+            category: [getCurrentMenuItem.id],
+          }
+        : null;
+
+    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+
+    location.pathname.includes("listing") && currentFilter !== null
+      ? setSearchParams(
+          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+        )
+      : navigate(getCurrentMenuItem.path);
+  }
+
   return (
     <nav className="flex gap-6">
       {/* Render Main Menu Items */}
       {mainMenuItems.map((item) => (
-        <Link className="text-sm font-medium" key={item.id} to={item.path}>
+        <Label
+          onClick={() => handleNavigate(item)}
+          className="text-lg font-medium cursor-pointer relative before:absolute before:bottom-0 before:left-0 before:w-0 before:h-[3px] before:bg-gradient-to-r from-purple-500 via-pink-500 to-red-500   before:transition-all before:duration-500 hover:before:w-full"
+          key={item.id}
+          // to={item.path}
+        >
           {item.label}
-        </Link>
+        </Label>
       ))}
 
       {/* Dropdown Menu for Categories */}
@@ -58,23 +86,27 @@ const MenuItems = () => {
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <button className="text-sm font-medium">Categories</button>
+          <button className="text-lg font-medium">Categories</button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-56"
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <DropdownMenuLabel>Categories</DropdownMenuLabel>
+          {/* <DropdownMenuLabel>Categories</DropdownMenuLabel> */}
           <DropdownMenuSeparator />
 
           {/* Render Category Items */}
           <DropdownMenuGroup>
             {categoryItems.map((item) => (
               <DropdownMenuItem asChild key={item.id}>
-                <Link to={item.path} className="flex items-center gap-2">
+                <Label
+                  onClick={() => handleNavigate(item)} // Call handleNavigate
+                  //  to={item.path}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <span>{item.label}</span>
-                </Link>
+                </Label>
               </DropdownMenuItem>
             ))}
           </DropdownMenuGroup>
@@ -136,7 +168,9 @@ const ShopHeader = () => {
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/shop/home" className="flex items-center gap-2">
           <HousePlug className="h-6 w-6" />
-          <span className="font-bold">Ecommernce</span>
+          <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
+            Ecommernce
+          </span>
         </Link>
         <Sheet>
           <SheetTrigger asChild>

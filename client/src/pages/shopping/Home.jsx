@@ -18,6 +18,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllFilteredProduct } from "@/store/shop-slice/products";
 import ShoopingProductTile from "@/components/shopping/ShoopingProductTile";
+import Footer from "@/components/common/Footer";
+import { useNavigate } from "react-router-dom";
 
 const categorirsWithIcons = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -39,10 +41,20 @@ const brandWithIcon = [
 const home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList } = useSelector((state) => state.shop);
-  console.log("productList", productList);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const slides = [banner1, banner2, banner3];
+
+  const handleNavigateToListingPage = (getCurrentItem, section) => {
+    sessionStorage.removeItem("filters");
+
+    const currentFilters = {
+      [section]: [getCurrentItem.id],
+    };
+    sessionStorage.setItem("filters", JSON.stringify(currentFilters));
+    navigate(`/shop/listing`);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -102,6 +114,9 @@ const home = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {categorirsWithIcons.map((category, index) => (
               <Card
+                onClick={() =>
+                  handleNavigateToListingPage(category, "category")
+                }
                 key={index}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
@@ -121,6 +136,7 @@ const home = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {brandWithIcon.map((brand, index) => (
               <Card
+                onClick={() => handleNavigateToListingPage(brand, "brand")}
                 key={index}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
@@ -157,6 +173,7 @@ const home = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

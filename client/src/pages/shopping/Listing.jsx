@@ -1,6 +1,3 @@
-import ProductFilter from "@/components/shopping/Filter";
-import ProductDetails from "@/components/shopping/ProductDetails";
-import ShoopingProductTile from "@/components/shopping/ShoopingProductTile";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,10 +14,19 @@ import {
 } from "@/store/shop-slice/products";
 import { useUser } from "@clerk/clerk-react";
 import { ArrowUpDownIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+
+// Lazy load components
+const ProductFilter = lazy(() => import("@/components/shopping/Filter"));
+const ProductDetails = lazy(() =>
+  import("@/components/shopping/ProductDetails")
+);
+const ShoopingProductTile = lazy(() =>
+  import("@/components/shopping/ShoopingProductTile")
+);
 
 const createSearchParamsHelper = (filterParams) => {
   const queryParams = [];
@@ -121,7 +127,9 @@ const Listing = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6">
-      <ProductFilter filters={filters} handleFilter={handleFilter} />
+      <Suspense fallback={<div>Loading Filters...</div>}>
+        <ProductFilter filters={filters} handleFilter={handleFilter} />
+      </Suspense>
       <div className="bg-background w-full rounded-lg shadow-sm">
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className="text-lg font-bold">All Products</h2>
@@ -155,25 +163,29 @@ const Listing = () => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((productItem, i) => (
-                <ShoopingProductTile
-                  key={i}
-                  product={productItem}
-                  handleGetProductDetails={handleGetProductDetails}
-                  handleAddToCart={handleAddToCart}
-                />
-              ))
-            : null}
-        </div>
+        <Suspense fallback={<div>Loading Products...</div>}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+            {productList && productList.length > 0
+              ? productList.map((productItem, i) => (
+                  <ShoopingProductTile
+                    key={i}
+                    product={productItem}
+                    handleGetProductDetails={handleGetProductDetails}
+                    handleAddToCart={handleAddToCart}
+                  />
+                ))
+              : null}
+          </div>
+        </Suspense>
       </div>
-      <ProductDetails
-        open={open}
-        setOpen={setOpen}
-        productDetails={productDetails}
-        handleAddToCart={handleAddToCart}
-      />
+      <Suspense fallback={<div>Loading Product Details...</div>}>
+        <ProductDetails
+          open={open}
+          setOpen={setOpen}
+          productDetails={productDetails}
+          handleAddToCart={handleAddToCart}
+        />
+      </Suspense>
     </div>
   );
 };

@@ -154,6 +154,13 @@ export const addressFormControls = [
     placeholder: "Enter your address",
   },
   {
+    label: "State",
+    name: "state",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter your state",
+  },
+  {
     label: "City",
     name: "city",
     componentType: "input",

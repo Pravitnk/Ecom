@@ -112,6 +112,7 @@ const Account = lazy(() => import("./pages/shopping/Account"));
 const Checkout = lazy(() => import("./pages/shopping/Checkout"));
 const Home = lazy(() => import("./pages/shopping/Home"));
 const Listing = lazy(() => import("./pages/shopping/Listing"));
+const About = lazy(() => import("./pages/About"));
 const Unauth = lazy(() => import("./pages/Unauth"));
 
 function App() {
@@ -219,6 +220,7 @@ function App() {
             <Route path="checkout" element={<Checkout />} />
             <Route path="listing" element={<Listing />} />
           </Route>
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
           <Route path="unauth-page" element={<Unauth />} />
         </Routes>
