@@ -40,7 +40,7 @@ export const updateAddress = createAsyncThunk(
   "address/updateAddress",
   async ({ clerkId, addressId, formData }) => {
     const result = await axios.put(
-      `http://localhost:4000/api/shop/address/update`,
+      `http://localhost:4000/api/shop/address/update/${clerkId}/${addressId}`,
       formData
     );
 

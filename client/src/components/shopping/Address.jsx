@@ -5,9 +5,13 @@ import { addressFormControls } from "@/config";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
-import { addAddress, getAllAddress } from "@/store/shop-slice/addressSlice";
+import {
+  addAddress,
+  deleteAddress,
+  getAllAddress,
+  updateAddress,
+} from "@/store/shop-slice/addressSlice";
 import { useClerk } from "@clerk/clerk-react";
-import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import AddressCard from "./Address-cart";
 
@@ -20,12 +24,12 @@ const initialAddressFormData = {
   notes: "",
 };
 
-const Address = () => {
+const Address = ({ setCurrentSelectedAddress, selectedId }) => {
   const [formData, setFormData] = useState(initialAddressFormData);
+  const [currentEditedId, setCurrentEditedId] = useState(null);
   const { addressList } = useSelector((state) => state.address);
   const dispatch = useDispatch();
   const { user } = useClerk();
-  console.log(addressList);
 
   // Validate if all mandatory fields are filled
   const handleInputChange = (e) => {
@@ -35,15 +39,37 @@ const Address = () => {
 
   const handleManageAddress = (e) => {
     e.preventDefault();
-    dispatch(addAddress({ ...formData, clerkId: user.id })).then((data) => {
-      console.log("data", data);
-      if (data?.payload?.success) {
-        dispatch(getAllAddress(user?.id));
-        toast.success("Address added successfully");
-      } else {
-        toast.error("Failed to add address");
-      }
-    });
+
+    if (addressList?.length >= 3 && currentEditedId === null) {
+      setFormData(initialAddressFormData);
+      toast.error("You can add maximum 3 addresses");
+      return;
+    }
+
+    currentEditedId !== null
+      ? dispatch(
+          updateAddress({
+            clerkId: user?.id,
+            addressId: currentEditedId,
+            formData,
+          })
+        ).then((data) => {
+          if (data?.payload?.success) {
+            dispatch(getAllAddress(user?.id));
+            setCurrentEditedId(null);
+            setFormData(initialAddressFormData);
+            toast.success("Address updated successfully");
+          }
+        })
+      : dispatch(addAddress({ ...formData, clerkId: user.id })).then((data) => {
+          if (data?.payload?.success) {
+            dispatch(getAllAddress(user?.id));
+            toast.success("Address added successfully");
+            setFormData(initialAddressFormData);
+          } else {
+            toast.error("Failed to add address");
+          }
+        });
   };
 
   const isFormValid = () => {
@@ -53,9 +79,32 @@ const Address = () => {
       .every((item) => item);
   };
 
-  const handleUpdateAddress = () => {};
+  const handleUpdateAddress = (getCurrentAddress) => {
+    setCurrentEditedId(getCurrentAddress._id);
+    setFormData({
+      ...formData,
+      address: getCurrentAddress?.address,
+      state: getCurrentAddress?.state,
+      city: getCurrentAddress?.city,
+      pincode: getCurrentAddress?.pincode,
+      phone: getCurrentAddress?.phone,
+      notes: getCurrentAddress?.notes,
+    });
+  };
 
-  const handleDeleteAddress = () => {};
+  const handleDeleteAddress = (getCurrentAddress) => {
+    console.log("deleted");
+    dispatch(
+      deleteAddress({ clerkId: user.id, addressId: getCurrentAddress._id })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getAllAddress(user?.id));
+        toast.success("Address deleted successfully");
+      } else {
+        toast.error("Failed to delete Address");
+      }
+    });
+  };
 
   useEffect(() => {
     dispatch(getAllAddress(user?.id));
@@ -63,7 +112,7 @@ const Address = () => {
 
   return (
     <Card>
-      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
         {addressList && addressList.length > 0
           ? addressList.map((item) => (
               <AddressCard
@@ -71,12 +120,16 @@ const Address = () => {
                 addressInfo={item}
                 handleUpdateAddress={handleUpdateAddress}
                 handleDeleteAddress={handleDeleteAddress}
+                selectedId={selectedId}
+                setCurrentSelectedAddress={setCurrentSelectedAddress}
               />
             ))
           : null}
       </div>
       <CardHeader>
-        <CardTitle>Add New Address</CardTitle>
+        <CardTitle>
+          {currentEditedId !== null ? "Edit Address" : "Add New Address"}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* <CommonForm
@@ -173,7 +226,7 @@ const Address = () => {
             disabled={!isFormValid()}
             className={`px-4 py-2 rounded-md font-semibold w-full`}
           >
-            Add
+            {currentEditedId !== null ? "Edit" : "Add"}
           </Button>
         </form>
       </CardContent>

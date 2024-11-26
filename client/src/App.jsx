@@ -94,6 +94,8 @@ import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Skeleton } from "./components/ui/skeleton";
+import PaymentSuccess from "./pages/shopping/PaymentSuccess";
+import PaymentFailure from "./pages/shopping/PaymentFailure";
 
 // Lazy load your components
 const AuthLayout = lazy(() => import("./components/auth/AuthLayout"));
@@ -219,6 +221,8 @@ function App() {
             <Route path="account" element={<Account />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="listing" element={<Listing />} />
+            <Route path="payment-success" element={<PaymentSuccess />} />
+            <Route path="payment-failure" element={<PaymentFailure />} />
           </Route>
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
