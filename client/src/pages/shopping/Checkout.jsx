@@ -6,17 +6,24 @@ import UserCartContent from "@/components/shopping/Cart-content";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useClerk } from "@clerk/clerk-react";
-import { createOrder } from "@/store/shop-slice/orderSlice";
+import { capturePayment, createOrder } from "@/store/shop-slice/orderSlice";
 import AddressCard from "@/components/shopping/Address-cart";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { approvalURL } = useSelector((state) => state.order);
+  console.log("approvalURL", approvalURL);
+
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const { addressList } = useSelector((state) => state.address);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { user } = useClerk();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const userId = user?.id;
 
   const cartTotal =
     cartItems && cartItems?.items && cartItems?.items?.length > 0
@@ -49,6 +56,7 @@ const Checkout = () => {
       cartItems: cartItems.items.map((singleCartItem) => ({
         productId: singleCartItem?.productId,
         title: singleCartItem?.title,
+        description: singleCartItem?.description,
         image: singleCartItem?.image,
         price:
           singleCartItem?.salePrice > 0
@@ -66,46 +74,73 @@ const Checkout = () => {
         notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
-      paymentMethod: "razorpay",
+      paymentMethod: "Razorpay",
       paymentStatus: "pending",
       totalAmount: cartTotal,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
+      paymentId: "",
+      payerId: "",
     };
 
     // Call backend API to create a new order
     dispatch(createOrder(orderData)).then((response) => {
+      console.log("response", response);
+
       const data = response.payload;
 
-      if (data?.success) {
-        // Initialize Razorpay payment
-        const { razorpayOrderId, orderId } = data;
+      const { payload } = response; // Extract the payload directly
+      if (payload?.success) {
+        const { razorpayOrderId, approvalURL } = data;
+        console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: cartTotal * 100, // Convert to paise
           currency: "INR",
           name: "Vish",
           description: "Order Payment",
+          receipt: user?.id,
           order_id: razorpayOrderId, // Razorpay Order ID
-          handler: async (response) => {
+          handler: async (response, payerId, location) => {
             // Send payment capture request to backend
-            dispatch(
-              capturePayment({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                orderId,
-              })
-            ).then((captureResponse) => {
-              if (captureResponse.payload?.success) {
-                toast.success("Payment successful!");
-                // Navigate to success page or show confirmation
-                window.location.href = "/shop/payment-success";
-              } else {
-                toast.error("Payment verification failed!");
-                window.location.href = "/shop/payment-failure";
-              }
-            });
+            const {
+              razorpay_payment_id: paymentId,
+              razorpay_order_id,
+              razorpay_signature,
+            } = response;
+            payerId = userId;
+
+            // const orderId = JSON.parse(
+            //   sessionStorage.getItem("currentOrderId")
+            // );
+
+            // dispatch(
+            //   capturePayment({
+            //     paymentId,
+            //     orderId,
+            //     razorpay_signature,
+            //     payerId,
+            //   })
+            // ).then((data) => {
+            //   console.log("capture", data);
+
+            //   const { payload } = data; // Extract the payload directly
+            //   if (payload?.success) {
+            //     // sessionStorage.removeItem("currentOrderId");
+            //     // window.location.href = `/shop/payment-success?paymentId=${paymentId}&payerId=${payerId}`;
+            //     navigate(
+            //       `/shop/payment-success?paymentId=${paymentId}&payerId=${payerId}`
+            //     );
+            //   }
+            // });
+            // }
+            // console.log("hey");
+
+            // Navigate with paymentId and orderId
+            navigate(
+              `/shop/payment-return?paymentId=${paymentId}&payerId=${payerId}`
+            );
           },
           prefill: {
             name: user?.name,
@@ -125,9 +160,9 @@ const Checkout = () => {
     });
   };
 
-  if (approvalURL) {
-    window.location.href = approvalURL;
-  }
+  // if (approvalURL) {
+  //   window.location.href = approvalURL;
+  // }
 
   return (
     <div className="flex flex-col">

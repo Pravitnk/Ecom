@@ -22,11 +22,11 @@ const AddressCard = ({
   ];
   return (
     <Card
-      // onClick={
-      //   setCurrentSelectedAddress
-      //     ? () => setCurrentSelectedAddress(addressInfo)
-      //     : null
-      // }
+      onClick={
+        setCurrentSelectedAddress
+          ? () => setCurrentSelectedAddress(addressInfo)
+          : null
+      }
       className={`cursor-pointer border-blue-500 ${
         selectedId?._id === addressInfo?._id
           ? "border-blue-700 border-[4px]"
@@ -36,11 +36,7 @@ const AddressCard = ({
       <div className="relative left-2 top-2">
         <Checkbox
           checked={selectedId?._id === addressInfo?._id}
-          onClick={
-            setCurrentSelectedAddress
-              ? () => setCurrentSelectedAddress(addressInfo)
-              : null
-          }
+          className="rounded-full"
         />
       </div>
       <CardContent className="grid gap-4 p-4">

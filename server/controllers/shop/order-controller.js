@@ -56,10 +56,11 @@ const createOrder = async (req, res) => {
     res.status(201).json({
       success: true,
       razorpayOrderId: razorpayOrder.id,
+      // approvalURL,
       orderId: newlyCreatedOrder._id,
       redirectUrls: {
-        success: `http://yourdomain.com/payment-success?orderId=${newlyCreatedOrder._id}`,
-        failure: `http://yourdomain.com/payment-failure?orderId=${newlyCreatedOrder._id}`,
+        success: `http://localhost:5173/shop/payment-success?orderId=${newlyCreatedOrder._id}`,
+        failure: `http://localhost:5173/shop/payment-failure?orderId=${newlyCreatedOrder._id}`,
       },
     });
   } catch (error) {
@@ -74,12 +75,7 @@ const createOrder = async (req, res) => {
 
 const capturePayment = async (req, res) => {
   try {
-    const {
-      razorpay_payment_id,
-      razorpay_order_id,
-      razorpay_signature,
-      orderId,
-    } = req.body;
+    const { paymentId, orderId, razorpay_signature, payerId } = req.body;
 
     // Find the order in the database
     let order = await Order.findById(orderId);
@@ -92,7 +88,7 @@ const capturePayment = async (req, res) => {
     }
 
     // Verify the Razorpay signature
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const body = orderId + "|" + paymentId;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
@@ -108,9 +104,9 @@ const capturePayment = async (req, res) => {
     // Update order details
     order.paymentStatus = "Paid";
     order.orderStatus = "Confirmed";
-    order.paymentId = razorpay_payment_id;
+    order.paymentId = paymentId;
+    order.payerId = payerId;
 
-    // Update product stock
     for (let item of order.cartItems) {
       let product = await ProductModel.findById(item.productId);
 

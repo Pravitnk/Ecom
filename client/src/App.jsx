@@ -94,8 +94,6 @@ import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Skeleton } from "./components/ui/skeleton";
-import PaymentSuccess from "./pages/shopping/PaymentSuccess";
-import PaymentFailure from "./pages/shopping/PaymentFailure";
 
 // Lazy load your components
 const AuthLayout = lazy(() => import("./components/auth/AuthLayout"));
@@ -116,6 +114,8 @@ const Home = lazy(() => import("./pages/shopping/Home"));
 const Listing = lazy(() => import("./pages/shopping/Listing"));
 const About = lazy(() => import("./pages/About"));
 const Unauth = lazy(() => import("./pages/Unauth"));
+const PaymentSuccess = lazy(() => import("./pages/shopping/PaymentSuccess"));
+const PaymentReturn = lazy(() => import("./pages/shopping/PaymentReturn"));
 
 function App() {
   // const { loading } = useSelector((state) => state.auth);
@@ -222,7 +222,7 @@ function App() {
             <Route path="checkout" element={<Checkout />} />
             <Route path="listing" element={<Listing />} />
             <Route path="payment-success" element={<PaymentSuccess />} />
-            <Route path="payment-failure" element={<PaymentFailure />} />
+            <Route path="payment-return" element={<PaymentReturn />} />
           </Route>
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />

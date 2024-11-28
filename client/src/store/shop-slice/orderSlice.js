@@ -21,11 +21,28 @@ export const createOrder = createAsyncThunk(
       return response?.data;
     } catch (error) {
       console.error(
-        "Error in addToCart:",
+        "Error in create order:",
         error?.response?.data || error.message
       );
       return rejectWithValue(error?.response?.data || error.message);
     }
+  }
+);
+
+export const capturePayment = createAsyncThunk(
+  "/order/capturePayment",
+  async ({ paymentId, orderId, razorpay_signature, payerId }) => {
+    const response = await axios.post(
+      "http://localhost:5000/api/shop/order/capture",
+      {
+        paymentId,
+        orderId,
+        razorpay_signature,
+        payerId,
+      }
+    );
+
+    return response.data;
   }
 );
 
