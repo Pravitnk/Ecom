@@ -6,7 +6,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { sortOptions } from "@/config";
+import { sortOptions } from "@/config/index";
 import { addToCart, getCartItems } from "@/store/shop-slice/cartSlice";
 import {
   getAllFilteredProduct,

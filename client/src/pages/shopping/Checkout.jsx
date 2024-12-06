@@ -9,6 +9,8 @@ import { useClerk } from "@clerk/clerk-react";
 import { capturePayment, createOrder } from "@/store/shop-slice/orderSlice";
 import AddressCard from "@/components/shopping/Address-cart";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@clerk/clerk-react";
+import axios from "axios";
 
 const Checkout = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -22,6 +24,7 @@ const Checkout = () => {
   const { user } = useClerk();
   const navigate = useNavigate();
   const location = useLocation();
+  const { getToken } = useAuth();
 
   const userId = user?.id;
 
@@ -101,9 +104,14 @@ const Checkout = () => {
           name: "Vish",
           description: "Order Payment",
           receipt: user?.id,
+          image:
+            "https://tse2.mm.bing.net/th?id=OIP.ZRONvRllaSV6Dzv52zNF3gHaEK&pid=Api&P=0&h=180",
           order_id: razorpayOrderId, // Razorpay Order ID
-          handler: async (response, payerId, location) => {
+          handler: async (response, payerId) => {
             // Send payment capture request to backend
+            const orderId = JSON.parse(
+              sessionStorage.getItem("currentOrderId")
+            );
             const {
               razorpay_payment_id: paymentId,
               razorpay_order_id,
@@ -111,36 +119,41 @@ const Checkout = () => {
             } = response;
             payerId = userId;
 
-            // const orderId = JSON.parse(
-            //   sessionStorage.getItem("currentOrderId")
-            // );
+            // Send payment details directly to the backend
+            try {
+              const res = await fetch(
+                "http://localhost:4000/api/shop/order/capture",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    paymentId,
+                    orderId,
+                    razorpay_signature,
+                    payerId: user?.id,
+                  }),
+                }
+              );
 
-            // dispatch(
-            //   capturePayment({
-            //     paymentId,
-            //     orderId,
-            //     razorpay_signature,
-            //     payerId,
-            //   })
-            // ).then((data) => {
-            //   console.log("capture", data);
-
-            //   const { payload } = data; // Extract the payload directly
-            //   if (payload?.success) {
-            //     // sessionStorage.removeItem("currentOrderId");
-            //     // window.location.href = `/shop/payment-success?paymentId=${paymentId}&payerId=${payerId}`;
-            //     navigate(
-            //       `/shop/payment-success?paymentId=${paymentId}&payerId=${payerId}`
-            //     );
-            //   }
-            // });
-            // }
-            // console.log("hey");
+              const data = await res.json();
+              if (data.success) {
+                // Navigate to success page
+                console.log("success");
+                navigate(
+                  `/shop/payment-return?paymentId=${paymentId}&payerId=${payerId}`
+                );
+              }
+            } catch (error) {
+              console.error("Error capturing payment:", error);
+              navigate("/shop/payment-failure");
+            }
 
             // Navigate with paymentId and orderId
-            navigate(
-              `/shop/payment-return?paymentId=${paymentId}&payerId=${payerId}`
-            );
+            // navigate(
+            //   `/shop/payment-return?paymentId=${paymentId}&payerId=${payerId}`
+            // );
           },
           prefill: {
             name: user?.name,

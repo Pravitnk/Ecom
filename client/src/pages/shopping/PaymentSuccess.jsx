@@ -12,16 +12,17 @@ const PaymentSuccess = () => {
   const query = new URLSearchParams(useLocation().search);
   const paymentId = query.get("paymentId");
   const payerId = query.get("payerId");
+  const orderId = query.get("orderId");
 
-  // useEffect(() => {
-  //   // Countdown logic
-  //   if (count > 0) {
-  //     const timer = setTimeout(() => setCount(count - 1), 1000); // Decrease count every second
-  //     return () => clearTimeout(timer); // Cleanup timer on unmount
-  //   } else {
-  //     navigate("/shop/account"); // Redirect when count reaches 0
-  //   }
-  // }, [count, navigate]);
+  useEffect(() => {
+    // Countdown logic
+    if (count > 0) {
+      const timer = setTimeout(() => setCount(count - 1), 1000); // Decrease count every second
+      return () => clearTimeout(timer); // Cleanup timer on unmount
+    } else {
+      navigate("/shop/account"); // Redirect when count reaches 0
+    }
+  }, [count, navigate]);
 
   return (
     <div className="relative h-[90vh]">
@@ -34,6 +35,7 @@ const PaymentSuccess = () => {
         </CardHeader>
         <p className="mt-4 text-lg text-gray-600">Payment ID: {paymentId}</p>
         <p className="text-lg text-gray-600">Payer ID: {payerId}</p>
+        <p className="text-lg text-gray-600">Order ID: {orderId}</p>
         <p className="mt-4 text-gray-500">
           Redirecting you to your orders in {count} seconds...
         </p>

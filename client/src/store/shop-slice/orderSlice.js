@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { serverURL } from "@/config/config";
 
 const initialState = {
   approvalURL: null,
@@ -14,7 +15,7 @@ export const createOrder = createAsyncThunk(
   async (orderData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `http://localhost:4000/api/shop/order/create`,
+        `${serverURL}/api/shop/order/create`,
         orderData
       );
 
@@ -32,17 +33,16 @@ export const createOrder = createAsyncThunk(
 export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ paymentId, orderId, razorpay_signature, payerId }) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
-      {
-        paymentId,
-        orderId,
-        razorpay_signature,
-        payerId,
-      }
-    );
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/shop/order/capture",
+        { paymentId, orderId, razorpay_signature, payerId }
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      console.log("payment capture error", error);
+    }
   }
 );
 

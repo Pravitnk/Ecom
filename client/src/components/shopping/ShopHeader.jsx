@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { shoppingViewHeaderMenuItems } from "@/config";
+// import { shoppingViewHeaderMenuItems } from "@/config";
 import CustomUser from "../layout/Custom-user";
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ import UserCartWrapper from "./Cart-wrapper";
 import { useDispatch, useSelector } from "react-redux";
 import { getCartItems } from "@/store/shop-slice/cartSlice";
 import { Label } from "../ui/label";
+import { shoppingViewHeaderMenuItems } from "@/config/index";
 
 // const MenuItems = () => {
 //   return (

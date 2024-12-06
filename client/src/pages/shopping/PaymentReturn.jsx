@@ -10,19 +10,15 @@ function PaypalReturnPage() {
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const paymentId = params.get("paymentId");
-  const payerId = params.get("payerID");
+  const payerId = params.get("payerId");
+
+  const orderId = JSON.parse(sessionStorage.getItem("currentOrderId"));
 
   useEffect(() => {
     if (paymentId && payerId) {
-      const orderId = JSON.parse(sessionStorage.getItem("currentOrderId"));
-
-      dispatch(capturePayment({ paymentId, payerId, orderId })).then((data) => {
-        if (data?.payload?.success) {
-          sessionStorage.removeItem("currentOrderId");
-          window.location.href = "/shop/payment-success";
-          // navigate("/shop/payment-success");
-        }
-      });
+      navigate(
+        `/shop/payment-success?paymentId=${paymentId}&payerId=${payerId}&orderId=${orderId}`
+      );
     }
   }, [paymentId, payerId, dispatch]);
 
