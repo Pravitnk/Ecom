@@ -9,6 +9,7 @@ import shopRoute from "./routes/shop/product_route.js";
 import cartRout from "./routes/shop/cart.route.js";
 import addressRoute from "./routes/shop/address.routes.js";
 import orderRoute from "./routes/shop/order.routes.js";
+import adminOrder from "./routes/admin/order.routes.js";
 
 // Load environment variables from.env file
 await databaseConnection();
@@ -41,6 +42,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", router);
 app.use("/api/admin/products", adminRoute);
+app.use("/api/admin/orders", adminOrder);
 app.use("/api/shop/products", shopRoute);
 app.use("/api/shop/cart", cartRout);
 app.use("/api/shop/address", addressRoute);

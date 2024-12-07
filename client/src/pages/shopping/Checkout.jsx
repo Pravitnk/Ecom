@@ -6,16 +6,13 @@ import UserCartContent from "@/components/shopping/Cart-content";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useClerk } from "@clerk/clerk-react";
-import { capturePayment, createOrder } from "@/store/shop-slice/orderSlice";
+import { createOrder } from "@/store/shop-slice/orderSlice";
 import AddressCard from "@/components/shopping/Address-cart";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
-import axios from "axios";
 
 const Checkout = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { approvalURL } = useSelector((state) => state.order);
-  console.log("approvalURL", approvalURL);
 
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const { addressList } = useSelector((state) => state.address);
@@ -24,7 +21,6 @@ const Checkout = () => {
   const { user } = useClerk();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getToken } = useAuth();
 
   const userId = user?.id;
 
@@ -42,7 +38,7 @@ const Checkout = () => {
       : 0;
 
   const handleInitiateRazorpayPayment = () => {
-    if (cartItems.length === 0) {
+    if (cartItems.items.length === 0) {
       toast.error("Your cart is empty. Please add items to proceed");
 
       return;
@@ -149,11 +145,6 @@ const Checkout = () => {
               console.error("Error capturing payment:", error);
               navigate("/shop/payment-failure");
             }
-
-            // Navigate with paymentId and orderId
-            // navigate(
-            //   `/shop/payment-return?paymentId=${paymentId}&payerId=${payerId}`
-            // );
           },
           prefill: {
             name: user?.name,
@@ -195,7 +186,7 @@ const Checkout = () => {
         <div>
           {cartItems && cartItems?.items && cartItems?.items?.length > 0
             ? cartItems?.items?.map((item, index) => (
-                <UserCartContent cartItems={item} />
+                <UserCartContent key={index} cartItems={item} />
               ))
             : null}
           <div className="mt-8 space-y-4">
@@ -205,7 +196,11 @@ const Checkout = () => {
             </div>
           </div>
           <div className="mt-4">
-            <Button onClick={handleInitiateRazorpayPayment} className="w-full">
+            <Button
+              onClick={handleInitiateRazorpayPayment}
+              className="w-full"
+              // disabled={cartItems.items.length === 0}
+            >
               Buy Now
             </Button>
           </div>

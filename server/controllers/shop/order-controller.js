@@ -76,8 +76,6 @@ const createOrder = async (req, res) => {
 const capturePayment = async (req, res) => {
   try {
     const { paymentId, orderId, razorpay_signature, payerId } = req.body;
-    console.log("paymentId", paymentId);
-    console.log("orderId", orderId);
 
     // Find the order in the database
     let order = await Order.findById(orderId);
@@ -153,4 +151,57 @@ const capturePayment = async (req, res) => {
   }
 };
 
-export { createOrder, capturePayment };
+const getAllOrdersByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const orders = await Order.find({ userId });
+
+    if (!orders.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found for the User",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Orders fetched successfully",
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Error while capturing Razorpay payment:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error while capturing payment.",
+    });
+  }
+};
+
+const getOrderDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Order fetched successfully",
+      data: order,
+    });
+  } catch (error) {
+    console.error("Error while capturing Razorpay payment:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error while capturing payment.",
+    });
+  }
+};
+
+export { createOrder, capturePayment, getAllOrdersByUser, getOrderDetails };
