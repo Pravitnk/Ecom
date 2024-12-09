@@ -6,21 +6,26 @@ import CommonForm from "../common/Form";
 import { Badge } from "../ui/badge";
 import { useDispatch } from "react-redux";
 import {
+  getAllOrdersOfAllUser,
   getOrderDetailsForAdmin,
   updateOrderStatus,
 } from "@/store/admin/orderSlice";
+import { toast } from "react-toastify";
 
 const initialFormData = {
   status: "",
 };
 
-const AdminOrderDetailsView = ({ orderDetails, user }) => {
+const AdminOrderDetailsView = ({
+  orderDetails,
+  user,
+  setOpenDetailsDialog,
+}) => {
   const [formData, setFormData] = useState(initialFormData);
   const dispatch = useDispatch();
 
   const handleOrderUpdateStatus = (e) => {
     e.preventDefault();
-    console.log("formData", formData);
     const { status } = formData;
 
     dispatch(
@@ -29,14 +34,15 @@ const AdminOrderDetailsView = ({ orderDetails, user }) => {
         orderStatus: status,
       })
     ).then((data) => {
-      console.log("data", data);
       if (data?.payload?.success) {
         dispatch(getOrderDetailsForAdmin(orderDetails?._id));
+        dispatch(getAllOrdersOfAllUser());
         setFormData(initialFormData);
+        toast.success(data?.payload?.message);
+        setOpenDetailsDialog(false);
       }
     });
   };
-  console.log("orderDetails", orderDetails);
 
   return (
     <DialogContent className="sm:max-w-[600px]">
@@ -58,7 +64,7 @@ const AdminOrderDetailsView = ({ orderDetails, user }) => {
                 className={`p-2 py-1 px-3 ${
                   orderDetails?.orderStatus === "Confirmed"
                     ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
+                    : orderDetails?.orderStatus === "failed"
                     ? "bg-red-600"
                     : "bg-black"
                 }`}
@@ -148,20 +154,15 @@ const AdminOrderDetailsView = ({ orderDetails, user }) => {
             formControls={[
               {
                 label: "Order Status",
-                type: "status",
+                name: "status",
                 componentType: "select",
                 options: [
-                  // { id: "pending", label: "pending" },
-                  // { id: "underProcess", label: "under Process" },
-                  // { id: "underShipping", label: "under Shipping" },
-                  // { id: "failed", label: "failed" },
-                  // { id: "outForDelivery", label: "out for Delivery" },
-                  // { id: "delivered", label: "delivered" },
                   { id: "pending", label: "Pending" },
-                  { id: "inProcess", label: "In Process" },
-                  { id: "inShipping", label: "In Shipping" },
+                  { id: "underProcess", label: "Under Process" },
+                  { id: "underShipping", label: "Under Shipping" },
+                  { id: "failed", label: "Failed" },
+                  { id: "outForDelivery", label: "Out for Delivery" },
                   { id: "delivered", label: "Delivered" },
-                  { id: "rejected", label: "Rejected" },
                 ],
               },
             ]}

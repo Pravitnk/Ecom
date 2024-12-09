@@ -18,7 +18,15 @@ const ShoopingProductTile = ({
             alt={product?.title}
             className="w-full h-[220px] object-cover rounded-t-lg"
           />
-          {product?.salePrice > 0 ? (
+          {product?.totalStock === 0 ? (
+            <Badge className="absolute top-2 left-2 bg-red-400 hover:bg-red-600">
+              Out of stock
+            </Badge>
+          ) : product?.totalStock < 10 ? (
+            <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
+              {`Only ${product?.totalStock} items left`}
+            </Badge>
+          ) : product?.salePrice > 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-400 hover:bg-red-600">
               sale
             </Badge>
@@ -54,17 +62,21 @@ const ShoopingProductTile = ({
         </CardContent>
       </div>
       <CardFooter className="flex justify-between items-center">
-        <Button
-          className="w-full hover:scale-105 transition-all duration-500"
-          onClick={() => {
-            handleAddToCart(product._id);
-            // setOpenCreateProductDialog(true);
-            // setCurrentEditedId(product?._id);
-            // setFormData(product);
-          }}
-        >
-          Add to Cart
-        </Button>
+        {product?.totalStock === 0 ? (
+          <Button className="w-full opacity-60 cursor-not-allowed">
+            Out Of Stock
+          </Button>
+        ) : (
+          <Button
+            className="w-full hover:scale-105 transition-all duration-500"
+            onClick={() => {
+              handleAddToCart(product._id, product?.totalStock);
+            }}
+          >
+            Add to Cart
+          </Button>
+        )}
+
         {/* <Button onClick={() => handleDelete(product?._id)}>Buy Now</Button> */}
       </CardFooter>
     </Card>

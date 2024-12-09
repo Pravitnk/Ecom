@@ -15,6 +15,7 @@ const ProductDetails = ({ open, setOpen, productDetails, handleAddToCart }) => {
     setOpen(false);
     dispatch(setProductDetails());
   };
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[85vw] sm:max-w-[80vw] lg:max-w-[70vw]">
@@ -63,17 +64,41 @@ const ProductDetails = ({ open, setOpen, productDetails, handleAddToCart }) => {
             </div>
             <span className="text-muted-foreground">(4.5)</span>
           </div>
-          <div className="mt-5 mb-5 flex justify-between gap-4 ">
-            <Button
-              onClick={() => handleAddToCart(productDetails?._id)}
-              className="w-1/2 hover:scale-105 transition-all duration-500"
-            >
-              Add to Cart
-            </Button>
-            <Button className="w-1/2 hover:scale-105 transition-all duration-500">
-              Buy Now
-            </Button>
-          </div>
+          {/* <div className="mt-5 mb-5 flex justify-between gap-4 "> */}
+          {productDetails?.totalStock === 0 ? (
+            <div className="mt-5 mb-5 flex justify-center">
+              <Button
+                onClick={() =>
+                  handleAddToCart(
+                    productDetails?._id,
+                    productDetails?.totalStock
+                  )
+                }
+                className="w-full hover opacity-60 cursor-not-allowed"
+              >
+                Out of Stock
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-5 mb-5 flex justify-between gap-4 ">
+              <Button
+                onClick={() =>
+                  handleAddToCart(
+                    productDetails?._id,
+                    productDetails?.totalStock
+                  )
+                }
+                className="w-1/2 hover:scale-105 transition-all duration-500"
+              >
+                Add to Cart
+              </Button>
+              <Button className="w-1/2 hover:scale-105 transition-all duration-500">
+                Buy Now
+              </Button>
+            </div>
+          )}
+
+          {/* </div> */}
           <Separator />
           <div className="max-h-[300px] overflow-auto">
             <h2 className="text-xl font-bold mb-4">Reviews</h2>

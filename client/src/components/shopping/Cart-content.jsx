@@ -1,7 +1,7 @@
 import { Minus, Plus, Trash } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   deleteToCart,
   updateCartItemQuantity,
@@ -9,11 +9,37 @@ import {
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "react-toastify";
 
-const UserCartContent = ({ cartItems }) => {
+const UserCartContent = ({ cartItem }) => {
   const dispatch = useDispatch();
+  const { productList, productDetails } = useSelector((state) => state.shop);
+  const { cartItems } = useSelector((state) => state.shopCart);
+
   const { user } = useUser();
 
   const handleUpdateQuantity = (getCartItems, typeOfAction) => {
+    if (typeOfAction === "plus") {
+      let getAllCartItems = cartItems.items || [];
+      if (getAllCartItems.length) {
+        const indexOfCurrentCartItem = getAllCartItems.findIndex(
+          (item) => item.productId === getCartItems?.productId
+        );
+
+        const getCurrentProductIndex = productList.findIndex(
+          (product) => product._id === getCartItems?.productId
+        );
+
+        const getTotalStock = productList[getCurrentProductIndex].totalStock;
+
+        if (indexOfCurrentCartItem > -1) {
+          const getQuantity = getAllCartItems[indexOfCurrentCartItem].quantity;
+          if (getQuantity + 1 > getTotalStock) {
+            toast.error(`Cannot add more than available stock`);
+            return;
+          }
+        }
+      }
+    }
+
     // Calculate the new quantity
     const newQuantity =
       typeOfAction === "plus"
@@ -58,27 +84,33 @@ const UserCartContent = ({ cartItems }) => {
   return (
     <div className="flex items-center space-x-4">
       <img
-        src={cartItems?.image}
-        alt={cartItems?.title}
+        src={cartItem?.image}
+        alt={cartItem?.title}
         className="w-20 h-20 rounded object-cover"
       />
       <div className="flex-1">
-        <h3 className="font-bold">{cartItems?.title}</h3>
+        <h3 className="font-bold">{cartItem?.title}</h3>
         <div className="flex items-center mt-1 gap-3">
           <Button
-            onClick={() => handleUpdateQuantity(cartItems, "minus")}
+            onClick={() => handleUpdateQuantity(cartItem, "minus")}
             size="sm"
             className="h-7 w-7 rounded-full"
-            disabled={cartItems?.quantity === 1}
+            disabled={cartItem?.quantity === 1}
           >
             <Minus className="w-4 h-4" />
             <span className="sr-only">decrease</span>
           </Button>
-          <span className="font-semibold">{cartItems?.quantity}</span>
+          <span className="font-semibold">{cartItem?.quantity}</span>
           <Button
-            onClick={() => handleUpdateQuantity(cartItems, "plus")}
+            onClick={() => handleUpdateQuantity(cartItem, "plus")}
             size="sm"
             className="h-7 w-7 rounded-full"
+            // disabled={
+            //   cartItems?.items === 0 ||
+            //   productList?.find(
+            //     (product) => product._id === cartItem?.productId
+            //   )?.totalStock <= cartItem?.quantity
+            // }
           >
             <Plus className="w-4 h-4" />
             <span className="sr-only">increase</span>
@@ -89,13 +121,12 @@ const UserCartContent = ({ cartItems }) => {
         <p className="font-semibold">
           Rs.
           {(
-            (cartItems?.salePrice > 0
-              ? cartItems?.salePrice
-              : cartItems?.price) * cartItems?.quantity
+            (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
+            cartItem?.quantity
           ).toFixed(2)}
         </p>
         <Trash
-          onClick={() => handleCartItemDelete(cartItems)}
+          onClick={() => handleCartItemDelete(cartItem)}
           className="cursor-pointer mt-1"
           size={20}
         />

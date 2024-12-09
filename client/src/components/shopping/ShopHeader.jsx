@@ -1,8 +1,13 @@
 import { useUser } from "@clerk/clerk-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { HousePlug, Menu, ShoppingCart } from "lucide-react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 // import { shoppingViewHeaderMenuItems } from "@/config";
 import CustomUser from "../layout/Custom-user";
@@ -20,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCartItems } from "@/store/shop-slice/cartSlice";
 import { Label } from "../ui/label";
 import { shoppingViewHeaderMenuItems } from "@/config/index";
+import logo from "/logo1.png";
 
 // const MenuItems = () => {
 //   return (
@@ -37,6 +43,8 @@ const MenuItems = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Separate the items for "Categories" and others
   const mainMenuItems = shoppingViewHeaderMenuItems.filter(
@@ -169,9 +177,9 @@ const ShopHeader = () => {
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/shop/home" className="flex items-center gap-2">
-          <HousePlug className="h-6 w-6" />
+          <img className="h-7 w-7" src={logo} alt="logo" />
           <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent">
-            Ecommernce
+            ADD ONE ART
           </span>
         </Link>
         <Sheet>

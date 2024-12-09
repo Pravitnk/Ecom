@@ -44,12 +44,14 @@ const createSearchParamsHelper = (filterParams) => {
 const Listing = () => {
   const dispatch = useDispatch();
   const { productList, productDetails } = useSelector((state) => state.shop);
+  const { cartItems } = useSelector((state) => state.shopCart);
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [open, setOpen] = useState(false);
   const { user } = useUser();
   const clerkId = user.id;
+  const categorySearchParams = searchParams.get("category");
 
   const handleSort = (value) => {
     setSort(value);
@@ -81,7 +83,22 @@ const Listing = () => {
     // setOpen(true);
   };
 
-  const handleAddToCart = (getCurrentProductId) => {
+  const handleAddToCart = (getCurrentProductId, getTotalStock) => {
+    let getAllCartItems = cartItems.items || [];
+    if (getAllCartItems.length) {
+      const indexOfCurrentItem = getAllCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId
+      );
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getAllCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast.error(`Cannot add more than available stock`);
+          setOpen(false);
+          return;
+        }
+      }
+    }
+
     dispatch(
       addToCart({
         clerkId: user?.id,
@@ -92,7 +109,7 @@ const Listing = () => {
       if (data?.payload?.success) {
         dispatch(getCartItems(clerkId));
         toast.success("Product successfully added to cart...");
-        setOpen(false);
+        // setOpen(false);
       }
     });
   };
@@ -101,7 +118,7 @@ const Listing = () => {
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-  }, []);
+  }, [categorySearchParams]);
 
   //get filtered products
   useEffect(() => {
@@ -122,8 +139,6 @@ const Listing = () => {
   useEffect(() => {
     if (productDetails !== null) setOpen(true);
   }, [productDetails]);
-
-  console.log("productDetails", productDetails);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6">
@@ -184,6 +199,7 @@ const Listing = () => {
           setOpen={setOpen}
           productDetails={productDetails}
           handleAddToCart={handleAddToCart}
+          cartItems={cartItems}
         />
       </Suspense>
     </div>

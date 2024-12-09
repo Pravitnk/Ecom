@@ -64,7 +64,9 @@ const AdminOrders = () => {
                       <Badge
                         className={`p-2 py-1 px-3 ${
                           orderItem?.orderStatus === "Confirmed"
-                            ? "bg-green-600"
+                            ? "bg-green-500"
+                            : orderItem?.orderStatus === "failed"
+                            ? "bg-red-600"
                             : "bg-black"
                         }`}
                       >
@@ -92,6 +94,7 @@ const AdminOrders = () => {
                         <AdminOrderDetailsView
                           orderDetails={orderDetails}
                           user={user}
+                          setOpenDetailsDialog={setOpenDetailsDialog}
                         />
                       </Dialog>
                     </TableCell>

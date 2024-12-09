@@ -5,8 +5,6 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 
 const ShoppingOrderDetailsView = ({ orderDetails, user }) => {
-  console.log("orderDetails", orderDetails);
-
   return (
     <DialogContent className="sm:max-w-[600px]">
       <div className="grid gap-6">
@@ -25,7 +23,9 @@ const ShoppingOrderDetailsView = ({ orderDetails, user }) => {
               <Badge
                 className={`p-2 py-1 px-3 ${
                   orderDetails?.orderStatus === "Confirmed"
-                    ? "bg-green-600"
+                    ? "bg-green-500"
+                    : orderDetails?.orderStatus === "failed"
+                    ? "bg-red-600"
                     : "bg-black"
                 }`}
               >

@@ -44,13 +44,14 @@ function CommonForm({
       case "select":
         element = (
           <Select
-            onValueChange={(value) =>
+            onValueChange={(value) => {
               setFormData({
                 ...formData,
                 [getControlItem.name]: value,
-              })
-            }
+              });
+            }}
             value={value}
+            // value={formData[getControlItem.name] || ""}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={getControlItem.label} />

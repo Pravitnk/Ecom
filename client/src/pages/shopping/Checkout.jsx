@@ -84,14 +84,12 @@ const Checkout = () => {
 
     // Call backend API to create a new order
     dispatch(createOrder(orderData)).then((response) => {
-      console.log("response", response);
-
       const data = response.payload;
 
       const { payload } = response; // Extract the payload directly
       if (payload?.success) {
         const { razorpayOrderId, approvalURL } = data;
-        console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+        // console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -136,7 +134,6 @@ const Checkout = () => {
               const data = await res.json();
               if (data.success) {
                 // Navigate to success page
-                console.log("success");
                 navigate(
                   `/shop/payment-return?paymentId=${paymentId}&payerId=${payerId}`
                 );

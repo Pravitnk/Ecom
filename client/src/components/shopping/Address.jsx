@@ -93,7 +93,6 @@ const Address = ({ setCurrentSelectedAddress, selectedId }) => {
   };
 
   const handleDeleteAddress = (getCurrentAddress) => {
-    console.log("deleted");
     dispatch(
       deleteAddress({ clerkId: user.id, addressId: getCurrentAddress._id })
     ).then((data) => {
