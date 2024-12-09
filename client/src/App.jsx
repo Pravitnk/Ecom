@@ -1,14 +1,13 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useAuth, useUser } from "@clerk/clerk-react";
-import Header from "./components/common/Header";
 import Checkauth from "./components/common/Check-auth";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUserRole } from "./store/auth-slice/auth";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Skeleton } from "./components/ui/skeleton";
+import { serverURL } from "./config/config";
 
 // Lazy load your components
 const AuthLayout = lazy(() => import("./components/auth/AuthLayout"));
@@ -46,12 +45,9 @@ function App() {
     if (isSignedIn && user) {
       try {
         const token = await getToken();
-        const { data } = await axios.get(
-          "http://localhost:4000/api/auth/role",
-          {
-            headers: { token },
-          }
-        );
+        const { data } = await axios.get(`${serverURL}/api/auth/role`, {
+          headers: { token },
+        });
         setRole(data.role); // Set role based on response
       } catch (error) {
         console.error("Error fetching user role:", error);
