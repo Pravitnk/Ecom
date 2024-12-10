@@ -30,6 +30,7 @@ const About = lazy(() => import("./pages/About"));
 const Unauth = lazy(() => import("./pages/Unauth"));
 const PaymentSuccess = lazy(() => import("./pages/shopping/PaymentSuccess"));
 const PaymentReturn = lazy(() => import("./pages/shopping/PaymentReturn"));
+const Search = lazy(() => import("./pages/shopping/Search"));
 
 function App() {
   // const { loading } = useSelector((state) => state.auth);
@@ -132,6 +133,7 @@ function App() {
             <Route path="account" element={<Account />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="listing" element={<Listing />} />
+            <Route path="search" element={<Search />} />
             <Route path="payment-success" element={<PaymentSuccess />} />
             <Route path="payment-return" element={<PaymentReturn />} />
           </Route>

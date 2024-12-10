@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { HousePlug, Menu, ShoppingCart } from "lucide-react";
+import { HousePlug, Menu, Search, ShoppingCart } from "lucide-react";
 import {
   Link,
   useLocation,

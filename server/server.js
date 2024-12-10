@@ -10,6 +10,7 @@ import cartRout from "./routes/shop/cart.route.js";
 import addressRoute from "./routes/shop/address.routes.js";
 import orderRoute from "./routes/shop/order.routes.js";
 import adminOrder from "./routes/admin/order.routes.js";
+import searchRoute from "./routes/shop/search.routes.js";
 
 // Load environment variables from.env file
 await databaseConnection();
@@ -47,6 +48,7 @@ app.use("/api/shop/products", shopRoute);
 app.use("/api/shop/cart", cartRout);
 app.use("/api/shop/address", addressRoute);
 app.use("/api/shop/order", orderRoute);
+app.use("/api/shop/search", searchRoute);
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
