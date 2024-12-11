@@ -4,6 +4,7 @@ import { serverURL } from "@/config/config";
 
 const initialState = {
   isLoading: false,
+  keyword: "",
   searchResults: [],
 };
 
@@ -20,6 +21,9 @@ const searchSlice = createSlice({
   name: "search",
   initialState,
   reducers: {
+    setSearchKeyword: (state, action) => {
+      state.keyword = action.payload;
+    },
     resetSearchResults: (state) => {
       state.searchResults = [];
     },
@@ -40,6 +44,6 @@ const searchSlice = createSlice({
   },
 });
 
-export const { resetSearchResults } = searchSlice.actions;
+export const { resetSearchResults, setSearchKeyword } = searchSlice.actions;
 
 export default searchSlice.reducer;

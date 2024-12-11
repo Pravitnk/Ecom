@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import banner1 from "../../assets/banner-1.webp";
-import banner2 from "../../assets/banner-2.webp";
-import banner3 from "../../assets/banner-3.webp";
+// import banner1 from "../../assets/banner-1.webp";
+// import banner2 from "../../assets/banner-2.webp";
+// import banner3 from "../../assets/banner-3.webp";
 import nike from "../../assets/nike.jpg";
 import levis from "../../assets/levis.png";
 import { Button } from "@/components/ui/button";
@@ -46,7 +46,7 @@ const home = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const slides = [banner1, banner2, banner3];
+  // const slides = [banner1, banner2, banner3];
 
   const handleNavigateToListingPage = (getCurrentItem, section) => {
     sessionStorage.removeItem("filters");
@@ -171,7 +171,7 @@ const home = () => {
         </div>
       </section>
 
-      <section className="py-12">
+      {/* <section className="py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
             Feature Products
@@ -184,7 +184,7 @@ const home = () => {
               : null}
           </div>
         </div>
-      </section>
+      </section> */}
       <Footer />
     </div>
   );

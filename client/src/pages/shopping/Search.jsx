@@ -18,9 +18,9 @@ const Search = () => {
   const { searchResults } = useSelector((state) => state.search);
   const { productDetails } = useSelector((state) => state.shop);
   const { cartItems } = useSelector((state) => state.shopCart);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const [keyword, setKeyword] = useState("");
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const [keyword, setKeyword] = useState("");
   const { user } = useUser();
   const clerkId = user.id;
 
@@ -60,19 +60,19 @@ const Search = () => {
     // setOpen(true);
   };
 
-  useEffect(() => {
-    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
-      setTimeout(() => {
-        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-        dispatch(searchProducts(keyword)).then((data) =>
-          console.log("data", data)
-        );
-      }, 1000);
-    } else {
-      setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-      dispatch(resetSearchResults());
-    }
-  }, [keyword]);
+  // useEffect(() => {
+  //   if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
+  //     setTimeout(() => {
+  //       setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+  //       dispatch(searchProducts(keyword)).then((data) =>
+  //         console.log("data", data)
+  //       );
+  //     }, 800);
+  //   } else {
+  //     setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+  //     dispatch(resetSearchResults());
+  //   }
+  // }, [keyword]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
@@ -80,7 +80,7 @@ const Search = () => {
 
   return (
     <div className="container mx-auto md:px-6 px-4 py-8">
-      <div className="flex justify-center mb-8">
+      {/* <div className="flex justify-center mb-8">
         <div className="w-full flex items-center">
           <Input
             value={keyword}
@@ -90,7 +90,7 @@ const Search = () => {
             placeholder="Search products"
           />
         </div>
-      </div>
+      </div> */}
       {!searchResults?.length ? (
         <h1 className="text-4xl font-extrabold">No Results Found!</h1>
       ) : null}

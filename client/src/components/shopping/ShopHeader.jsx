@@ -24,7 +24,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCartItems } from "@/store/shop-slice/cartSlice";
 import { Label } from "../ui/label";
 import { shoppingViewHeaderMenuItems } from "@/config/index";
-import logo from "/logo1.png";
+import logo from "../../assets/logo1.png";
+import { Input } from "../ui/input";
+import {
+  resetSearchResults,
+  searchProducts,
+  setSearchKeyword,
+} from "@/store/shop-slice/searchSlice";
+
 const MenuItems = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -34,7 +41,8 @@ const MenuItems = () => {
 
   // Separate the items for "Categories" and others
   const mainMenuItems = shoppingViewHeaderMenuItems.filter(
-    (item) => item.id === "home" || item.id === "search"
+    (item) => item.id === "home"
+    //  || item.id === "search"
   );
   const categoryItems = shoppingViewHeaderMenuItems.filter(
     (item) => !["home", "search"].includes(item.id)
@@ -66,7 +74,7 @@ const MenuItems = () => {
       {mainMenuItems.map((item) => (
         <Label
           onClick={() => handleNavigate(item)}
-          className="text-lg font-medium cursor-pointer relative before:absolute before:bottom-0 before:left-0 before:w-0 before:h-[3px] before:bg-gradient-to-r from-purple-500 via-pink-500 to-red-500   before:transition-all before:duration-500 hover:before:w-full"
+          className="hidden lg:inline-block text-lg font-medium cursor-pointer relative before:absolute before:bottom-0 before:left-0 before:w-0 before:h-[3px] before:bg-gradient-to-r from-purple-500 via-pink-500 to-red-500   before:transition-all before:duration-500 hover:before:w-full"
           key={item.id}
           // to={item.path}
         >
@@ -74,154 +82,64 @@ const MenuItems = () => {
         </Label>
       ))}
 
-      {/* Dropdown Menu for Categories */}
       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-        <DropdownMenuTrigger
-          asChild
+        <div
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <button className="text-lg font-medium">Categories</button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-56"
-          onMouseEnter={() => setIsDropdownOpen(true)}
-          onMouseLeave={() => setIsDropdownOpen(false)}
-        >
-          {/* <DropdownMenuLabel>Categories</DropdownMenuLabel> */}
-          <DropdownMenuSeparator />
-
-          {/* Render Category Items */}
-          <DropdownMenuGroup>
-            {categoryItems.map((item) => (
-              <DropdownMenuItem asChild key={item.id}>
-                <Label
-                  onClick={() => handleNavigate(item)} // Call handleNavigate
-                  //  to={item.path}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <span>{item.label}</span>
-                </Label>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
+          <DropdownMenuTrigger asChild>
+            <button className="text-lg font-medium">Categories</button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {categoryItems.map((item) => (
+                <DropdownMenuItem asChild key={item.id}>
+                  <Label
+                    onClick={() => handleNavigate(item)}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <span>{item.label}</span>
+                  </Label>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </div>
       </DropdownMenu>
     </nav>
   );
 };
-
-// const MenuItems = () => {
-//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-//   const [searchText, setSearchText] = useState(""); // State for search input
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const [searchParams, setSearchParams] = useSearchParams();
-
-//   // Separate the items for "Categories" and others
-//   const mainMenuItems = shoppingViewHeaderMenuItems.filter(
-//     (item) => item.id === "home"
-//   );
-//   const categoryItems = shoppingViewHeaderMenuItems.filter(
-//     (item) => !["home", "search"].includes(item.id)
-//   );
-
-//   function handleNavigate(getCurrentMenuItem) {
-//     sessionStorage.removeItem("filters");
-//     const currentFilter =
-//       getCurrentMenuItem.id !== "home" &&
-//       getCurrentMenuItem.id !== "products" &&
-//       getCurrentMenuItem.id !== "search"
-//         ? {
-//             category: [getCurrentMenuItem.id],
-//           }
-//         : null;
-
-//     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
-
-//     location.pathname.includes("listing") && currentFilter !== null
-//       ? setSearchParams(
-//           new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-//         )
-//       : navigate(getCurrentMenuItem.path);
-//   }
-
-//   function handleSearchSubmit(e) {
-//     e.preventDefault();
-//     if (searchText.trim()) {
-//       navigate(`/search?query=${encodeURIComponent(searchText)}`);
-//     }
-//   }
-
-//   return (
-//     <nav className="flex gap-6">
-//       {/* Render Main Menu Items */}
-//       {mainMenuItems.map((item) => (
-//         <Label
-//           onClick={() => handleNavigate(item)}
-//           className="text-lg font-medium cursor-pointer relative before:absolute before:bottom-0 before:left-0 before:w-0 before:h-[3px] before:bg-gradient-to-r from-purple-500 via-pink-500 to-red-500   before:transition-all before:duration-500 hover:before:w-full"
-//           key={item.id}
-//         >
-//           {item.label}
-//         </Label>
-//       ))}
-
-//       {/* Dropdown Menu for Categories */}
-//       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-//         <DropdownMenuTrigger
-//           asChild
-//           onMouseEnter={() => setIsDropdownOpen(true)}
-//           onMouseLeave={() => setIsDropdownOpen(false)}
-//         >
-//           <button className="text-lg font-medium">Categories</button>
-//         </DropdownMenuTrigger>
-//         <DropdownMenuContent
-//           className="w-56"
-//           onMouseEnter={() => setIsDropdownOpen(true)}
-//           onMouseLeave={() => setIsDropdownOpen(false)}
-//         >
-//           <DropdownMenuSeparator />
-//           <DropdownMenuGroup>
-//             {categoryItems.map((item) => (
-//               <DropdownMenuItem asChild key={item.id}>
-//                 <Label
-//                   onClick={() => handleNavigate(item)} // Call handleNavigate
-//                   className="flex items-center gap-2 cursor-pointer"
-//                 >
-//                   <span>{item.label}</span>
-//                 </Label>
-//               </DropdownMenuItem>
-//             ))}
-//           </DropdownMenuGroup>
-//         </DropdownMenuContent>
-//       </DropdownMenu>
-
-//       {/* Input box for Search placed after Categories */}
-//       <form onSubmit={handleSearchSubmit} className="relative">
-//         <input
-//           type="text"
-//           value={searchText}
-//           onChange={(e) => setSearchText(e.target.value)}
-//           placeholder="Search..."
-//           className="text-lg font-medium px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-purple-500"
-//         />
-//         <button
-//           type="submit"
-//           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-//         >
-//           🔍
-//         </button>
-//       </form>
-//     </nav>
-//   );
-// };
 
 const HeaderRightContent = () => {
   const { isSignedIn, user } = useUser();
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const clerkId = user?.id;
+  const [keyword, setKeyword] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    dispatch(setSearchKeyword(value)); // Update global state
+    if (value.trim() !== "") navigate("/shop/search"); // Redirect to Search component
+  };
+
+  useEffect(() => {
+    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
+      setTimeout(() => {
+        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+        dispatch(searchProducts(keyword)).then((data) =>
+          console.log("data", data)
+        );
+      }, 800);
+    } else {
+      setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+      dispatch(resetSearchResults());
+    }
+  }, [keyword]);
 
   useEffect(() => {
     dispatch(getCartItems(clerkId));
@@ -229,6 +147,18 @@ const HeaderRightContent = () => {
 
   return (
     <div className="flex lg:flex-row flex-col gap-4">
+      <div className="w-2/3">
+        <Input
+          value={keyword}
+          name="keyword"
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="search product"
+          onClick={() => {
+            navigate("/shop/search");
+            onChange = { handleInputChange }; // Update keyword and navigate
+          }}
+        />
+      </div>
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
         <Button
           onClick={() => setOpenCartSheet(true)}
@@ -278,25 +208,26 @@ const ShopHeader = () => {
           </span>
         </Link>
         <Sheet>
+          <MenuItems />
+
           <SheetTrigger asChild>
             <Button varient="outline" size="icon" className="lg:hidden">
               <Menu />
               <span className="sr-only">Toggle header menu</span>
             </Button>
           </SheetTrigger>
+
           <SheetContent side="right" className="w-full max-w-xs">
-            <MenuItems />
+            {/* <MenuItems /> */}
             <HeaderRightContent />
           </SheetContent>
         </Sheet>
         <div className="hidden lg:block">
           <MenuItems />
         </div>
-        {/* {isSignedIn ? ( */}
         <div className="hidden lg:block">
           <HeaderRightContent />
         </div>
-        {/* // ) : null} */}
       </div>
     </header>
   );
