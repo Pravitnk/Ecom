@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useClerk } from "@clerk/clerk-react";
 import { createOrder } from "@/store/shop-slice/orderSlice";
-import AddressCard from "@/components/shopping/Address-cart";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
-  const { approvalURL } = useSelector((state) => state.order);
 
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const { addressList } = useSelector((state) => state.address);
@@ -161,10 +159,6 @@ const Checkout = () => {
     });
   };
 
-  // if (approvalURL) {
-  //   window.location.href = approvalURL;
-  // }
-
   return (
     <div className="flex flex-col">
       <div className="relative h-[350px] w-full overflow-hidden">
@@ -183,7 +177,7 @@ const Checkout = () => {
         <div>
           {cartItems && cartItems?.items && cartItems?.items?.length > 0
             ? cartItems?.items?.map((item, index) => (
-                <UserCartContent key={index} cartItems={item} />
+                <UserCartContent key={index} cartItem={item} />
               ))
             : null}
           <div className="mt-8 space-y-4">
@@ -198,7 +192,7 @@ const Checkout = () => {
               className="w-full"
               // disabled={cartItems.items.length === 0}
             >
-              Buy Now
+              {isPaymentStart ? "Processing the Payment..." : "Buy Now"}
             </Button>
           </div>
         </div>

@@ -42,7 +42,7 @@ const PaymentSuccess = () => {
         <Button className="mt-5" onClick={() => navigate("/shop/account")}>
           View Orders Now
         </Button>
-        <Button className="mt-2" onClick={() => navigate("/shop/home")}>
+        <Button className="mt-2" onClick={() => navigate("/shop/listing")}>
           Continue Shopping
         </Button>
       </Card>

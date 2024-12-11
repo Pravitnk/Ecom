@@ -1,48 +1,19 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-// const Checkauth = ({ isAuthenticated, user, children }) => {
-//   const location = useLocation();
-//   if (
-//     !isAuthenticated &&
-//     !(
-//       location.pathname.includes("/login")
-//       // location.pathname.includes("/singin")
-//     )
-//   ) {
-//     return <Navigate to="/auth/login" />;
-//   }
-
-//   if (isAuthenticated && location.pathname.includes("/login")) {
-//     if (user?.role === "admin") {
-//       return <Navigate to="/admin/dashboard" />;
-//     } else {
-//       return <Navigate to="/shop/home" />;
-//     }
-//   }
-
-//   if (
-//     isAuthenticated &&
-//     user?.role !== "admin" &&
-//     location.pathname.includes("admin")
-//   ) {
-//     return <Navigate to="/unauth-page" />;
-//   }
-
-//   if (
-//     isAuthenticated &&
-//     user?.role === "admin" &&
-//     location.pathname.includes("shop")
-//   ) {
-//     return <Navigate to="/admin/dashboard" />;
-//   }
-//   return <>{children}</>;
-// };
-
 const Checkauth = ({ isAuthenticated, user, children }) => {
   const location = useLocation();
   const path = location.pathname;
 
+  if (location.pathname === "/") {
+    return <Navigate to="/auth/login" />; // Redirect to login page if on home page
+  } else {
+    if (user?.role === "admin") {
+      <Navigate to="/admin/dashboard" />;
+    } else {
+      <Navigate to="/shop/home" />;
+    }
+  }
   // 1. Redirect to login if not authenticated and not already on login page
   if (!isAuthenticated && !path.includes("/login")) {
     return <Navigate to="/auth/login" />;

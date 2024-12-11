@@ -20,6 +20,7 @@ import { getAllFilteredProduct } from "@/store/shop-slice/products";
 import ShoopingProductTile from "@/components/shopping/ShoopingProductTile";
 import Footer from "@/components/common/Footer";
 import { useNavigate } from "react-router-dom";
+import { getFeatureImages } from "@/store/common/commonSlice";
 
 const categorirsWithIcons = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -41,6 +42,7 @@ const brandWithIcon = [
 const home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList } = useSelector((state) => state.shop);
+  const { featureImageList } = useSelector((state) => state.features);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,11 +60,11 @@ const home = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
     }, 3500);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [featureImageList]);
 
   useEffect(() => {
     dispatch(
@@ -70,22 +72,30 @@ const home = () => {
     );
   }, []);
 
+  useEffect(() => {
+    dispatch(getFeatureImages());
+  }, [dispatch]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="relative w-full aspect-video sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] overflow-hidden">
-        {slides.map((slide, index) => (
-          <img
-            src={slide}
-            key={index}
-            className={`${
-              index === currentSlide ? `opacity-100` : "opacity-0"
-            } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
-          />
-        ))}
+        {featureImageList && featureImageList?.length > 0
+          ? featureImageList?.map((slide, index) => (
+              <img
+                src={slide.image}
+                key={index}
+                className={`${
+                  index === currentSlide ? `opacity-100` : "opacity-0"
+                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+              />
+            ))
+          : null}
         <Button
           onClick={() =>
             setCurrentSlide(
-              (prevSlide) => (prevSlide - 1 + slides.length) % slides.length
+              (prevSlide) =>
+                (prevSlide - 1 + featureImageList.length) %
+                featureImageList.length
             )
           }
           variant="outline"
@@ -96,7 +106,9 @@ const home = () => {
         </Button>
         <Button
           onClick={() =>
-            setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
+            setCurrentSlide(
+              (prevSlide) => (prevSlide + 1) % featureImageList.length
+            )
           }
           variant="outline"
           size="icon"

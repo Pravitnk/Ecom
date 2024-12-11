@@ -42,7 +42,10 @@ const AuthLayout = () => {
       {/* Common part (Welcome section) */}
       <div className="hidden lg:flex items-center justify-center bg-black w-full lg:w-1/2 px-12">
         <div className="max-w-md space-y-6 text-center text-primary-foreground">
-          <AnimatedText text="Welcome to our Store" />
+          <h2 className="text-3xl tracking-widest font-bold mt-2">
+            Welcome to our Store
+          </h2>
+          <AnimatedText text="ADD ONE ART" />
         </div>
       </div>
 

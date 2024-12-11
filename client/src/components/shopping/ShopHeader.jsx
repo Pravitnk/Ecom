@@ -9,7 +9,6 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-// import { shoppingViewHeaderMenuItems } from "@/config";
 import CustomUser from "../layout/Custom-user";
 import {
   DropdownMenu,
@@ -26,19 +25,6 @@ import { getCartItems } from "@/store/shop-slice/cartSlice";
 import { Label } from "../ui/label";
 import { shoppingViewHeaderMenuItems } from "@/config/index";
 import logo from "/logo1.png";
-
-// const MenuItems = () => {
-//   return (
-//     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
-//       {shoppingViewHeaderMenuItems.map((item) => (
-//         <Link className="text-sm font-medium" key={item.id} to={item.path}>
-//           {item.label}
-//         </Link>
-//       ))}
-//     </nav>
-//   );
-// };
-
 const MenuItems = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -125,6 +111,111 @@ const MenuItems = () => {
   );
 };
 
+// const MenuItems = () => {
+//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+//   const [searchText, setSearchText] = useState(""); // State for search input
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const [searchParams, setSearchParams] = useSearchParams();
+
+//   // Separate the items for "Categories" and others
+//   const mainMenuItems = shoppingViewHeaderMenuItems.filter(
+//     (item) => item.id === "home"
+//   );
+//   const categoryItems = shoppingViewHeaderMenuItems.filter(
+//     (item) => !["home", "search"].includes(item.id)
+//   );
+
+//   function handleNavigate(getCurrentMenuItem) {
+//     sessionStorage.removeItem("filters");
+//     const currentFilter =
+//       getCurrentMenuItem.id !== "home" &&
+//       getCurrentMenuItem.id !== "products" &&
+//       getCurrentMenuItem.id !== "search"
+//         ? {
+//             category: [getCurrentMenuItem.id],
+//           }
+//         : null;
+
+//     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+
+//     location.pathname.includes("listing") && currentFilter !== null
+//       ? setSearchParams(
+//           new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+//         )
+//       : navigate(getCurrentMenuItem.path);
+//   }
+
+//   function handleSearchSubmit(e) {
+//     e.preventDefault();
+//     if (searchText.trim()) {
+//       navigate(`/search?query=${encodeURIComponent(searchText)}`);
+//     }
+//   }
+
+//   return (
+//     <nav className="flex gap-6">
+//       {/* Render Main Menu Items */}
+//       {mainMenuItems.map((item) => (
+//         <Label
+//           onClick={() => handleNavigate(item)}
+//           className="text-lg font-medium cursor-pointer relative before:absolute before:bottom-0 before:left-0 before:w-0 before:h-[3px] before:bg-gradient-to-r from-purple-500 via-pink-500 to-red-500   before:transition-all before:duration-500 hover:before:w-full"
+//           key={item.id}
+//         >
+//           {item.label}
+//         </Label>
+//       ))}
+
+//       {/* Dropdown Menu for Categories */}
+//       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+//         <DropdownMenuTrigger
+//           asChild
+//           onMouseEnter={() => setIsDropdownOpen(true)}
+//           onMouseLeave={() => setIsDropdownOpen(false)}
+//         >
+//           <button className="text-lg font-medium">Categories</button>
+//         </DropdownMenuTrigger>
+//         <DropdownMenuContent
+//           className="w-56"
+//           onMouseEnter={() => setIsDropdownOpen(true)}
+//           onMouseLeave={() => setIsDropdownOpen(false)}
+//         >
+//           <DropdownMenuSeparator />
+//           <DropdownMenuGroup>
+//             {categoryItems.map((item) => (
+//               <DropdownMenuItem asChild key={item.id}>
+//                 <Label
+//                   onClick={() => handleNavigate(item)} // Call handleNavigate
+//                   className="flex items-center gap-2 cursor-pointer"
+//                 >
+//                   <span>{item.label}</span>
+//                 </Label>
+//               </DropdownMenuItem>
+//             ))}
+//           </DropdownMenuGroup>
+//         </DropdownMenuContent>
+//       </DropdownMenu>
+
+//       {/* Input box for Search placed after Categories */}
+//       <form onSubmit={handleSearchSubmit} className="relative">
+//         <input
+//           type="text"
+//           value={searchText}
+//           onChange={(e) => setSearchText(e.target.value)}
+//           placeholder="Search..."
+//           className="text-lg font-medium px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-purple-500"
+//         />
+//         <button
+//           type="submit"
+//           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+//         >
+//           🔍
+//         </button>
+//       </form>
+//     </nav>
+//   );
+// };
+
 const HeaderRightContent = () => {
   const { isSignedIn, user } = useUser();
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -143,8 +234,12 @@ const HeaderRightContent = () => {
           onClick={() => setOpenCartSheet(true)}
           varient="outline"
           size="icon"
+          className="relative"
         >
           <ShoppingCart className="w-6 h-6" />
+          <span className="absolute top-[-8px] right-[-8px] text-white rounded-full font-bold w-5 bg-red-500">
+            {cartItems?.items?.length || null}
+          </span>
           <span className="sr-only">User cart</span>
         </Button>
         <UserCartWrapper
@@ -189,7 +284,7 @@ const ShopHeader = () => {
               <span className="sr-only">Toggle header menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-full max-w-xs">
+          <SheetContent side="right" className="w-full max-w-xs">
             <MenuItems />
             <HeaderRightContent />
           </SheetContent>
