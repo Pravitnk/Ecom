@@ -121,23 +121,55 @@ const HeaderRightContent = () => {
   const [keyword, setKeyword] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    dispatch(setSearchKeyword(value)); // Update global state
-    if (value.trim() !== "") navigate("/shop/search"); // Redirect to Search component
-  };
+  // const handleInputChange = (e) => {
+  //   const value = e.target.value;
+  //   dispatch(setSearchKeyword(value)); // Update global state
+  //   if (value.trim() !== "") navigate("/shop/search"); // Redirect to Search component
+  // };
 
   useEffect(() => {
     if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
       setTimeout(() => {
         setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-        dispatch(searchProducts(keyword)).then((data) =>
-          console.log("data", data)
-        );
+        dispatch(searchProducts(keyword)).then((data) => {
+          console.log("data", data);
+          if (data?.payload?.success) {
+            dispatch(searchParams(keyword));
+          }
+        });
       }, 800);
     } else {
       setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
       dispatch(resetSearchResults());
+    }
+  }, [keyword]);
+
+  // useEffect(() => {
+  //   if (keyword && keyword.trim().length > 3) {
+  //     const delayDebounce = setTimeout(() => {
+  //       setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+  //       dispatch(searchProducts(keyword)).then((data) => {
+  //         console.log("data", data);
+  //         if (data?.payload?.success) {
+  //           dispatch(searchParams(keyword));
+  //         }
+  //       });
+  //     }, 800);
+
+  //     return () => clearTimeout(delayDebounce); // Cleanup debounce timer
+  //   }
+  // }, [keyword]);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setKeyword(value); // Update local state
+    dispatch(setSearchKeyword(value)); // Update global state
+  };
+
+  useEffect(() => {
+    if (!keyword.trim()) {
+      setSearchParams(); // Clears the query parameter
+      dispatch(resetSearchResults()); // Resets the search results in Redux
     }
   }, [keyword]);
 
@@ -207,8 +239,14 @@ const ShopHeader = () => {
             ADD ONE ART
           </span>
         </Link>
-        <Sheet>
+        <div className="lg:block">
           <MenuItems />
+        </div>
+        <div className="hidden lg:block">
+          <HeaderRightContent />
+        </div>
+        <Sheet>
+          {/* <MenuItems /> */}
 
           <SheetTrigger asChild>
             <Button varient="outline" size="icon" className="lg:hidden">
@@ -222,12 +260,12 @@ const ShopHeader = () => {
             <HeaderRightContent />
           </SheetContent>
         </Sheet>
-        <div className="hidden lg:block">
+        {/* <div className="hidden lg:block">
           <MenuItems />
         </div>
         <div className="hidden lg:block">
           <HeaderRightContent />
-        </div>
+        </div> */}
       </div>
     </header>
   );

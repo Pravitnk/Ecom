@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { useClerk } from "@clerk/clerk-react";
 import { createOrder } from "@/store/shop-slice/orderSlice";
 import { useLocation, useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.png";
+import { serverURL } from "@/config/config";
 
 const Checkout = () => {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -86,7 +88,7 @@ const Checkout = () => {
 
       const { payload } = response; // Extract the payload directly
       if (payload?.success) {
-        const { razorpayOrderId, approvalURL } = data;
+        const { razorpayOrderId } = data;
         // console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
         const options = {
@@ -96,8 +98,7 @@ const Checkout = () => {
           name: "Vish",
           description: "Order Payment",
           receipt: user?.id,
-          image:
-            "https://tse2.mm.bing.net/th?id=OIP.ZRONvRllaSV6Dzv52zNF3gHaEK&pid=Api&P=0&h=180",
+          image: logo,
           order_id: razorpayOrderId, // Razorpay Order ID
           handler: async (response, payerId) => {
             // Send payment capture request to backend
@@ -113,21 +114,18 @@ const Checkout = () => {
 
             // Send payment details directly to the backend
             try {
-              const res = await fetch(
-                "http://localhost:4000/api/shop/order/capture",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    paymentId,
-                    orderId,
-                    razorpay_signature,
-                    payerId: user?.id,
-                  }),
-                }
-              );
+              const res = await fetch(`${serverURL}/api/shop/order/capture`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  paymentId,
+                  orderId,
+                  razorpay_signature,
+                  payerId: user?.id,
+                }),
+              });
 
               const data = await res.json();
               if (data.success) {
